@@ -41,6 +41,7 @@
   <tr><td>5</td><td>External script (diagram)</td><td>The diagram at the bottom is drawn as boxes and arrows, not shown as plain text</td><td></td></tr>
   <tr><td>6</td><td>Links</td><td><a href="https://docs.agiledataengine.com/" target="_blank" rel="noopener">ADE documentation</a> opens in a new tab</td><td></td></tr>
   <tr><td>7</td><td>Mobile / narrow view</td><td>Make the window narrow: tables and code stay readable</td><td></td></tr>
+  <tr><td>8</td><td>Embedded video</td><td>The YouTube video in Sample 3 plays inside the page. If not, the link below it opens the video</td><td></td></tr>
 </table>
 
 <hr>
@@ -101,7 +102,15 @@ flowchart LR
   P --> M[Decision memo]
 </pre>
 
-<footer>Test file v0.1 — not course content. Generated for checking Claned compatibility.</footer>
+<h3>Sample 3: Video</h3>
+
+<div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:6px;">
+  <iframe src="https://www.youtube-nocookie.com/embed/IXIeivSMU2A" title="YouTube video" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+</div>
+
+<p>If the video does not play: <a href="https://www.youtube.com/watch?v=IXIeivSMU2A" target="_blank" rel="noopener">open it on YouTube</a>.</p>
+
+<footer>Test file v0.2 — not course content. Generated for checking Claned compatibility.</footer>
 
 <script>
   document.getElementById("js-status").textContent = "JavaScript works";
