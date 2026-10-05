@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claned test — ADE AI-Assisted Exercises</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: #1f2328; }
+  h1, h2, h3, h4 { line-height: 1.25; }
+  h1 { border-bottom: 2px solid #d0d7de; padding-bottom: .3rem; }
+  table { border-collapse: collapse; margin: 1rem 0; width: 100%; }
+  th, td { border: 1px solid #d0d7de; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f6f8fa; }
+  code { background: #f6f8fa; padding: .1rem .3rem; border-radius: 4px; font-size: .9em; }
+  .block { position: relative; margin: 1rem 0; }
+  .block pre, .block blockquote { margin: 0; }
+  pre { background: #f6f8fa; padding: .8rem; border-radius: 6px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  blockquote { border-left: 4px solid #0969da; background: #f0f6ff; padding: .6rem 3.5rem .6rem .9rem; }
+  .copy { position: absolute; top: .4rem; right: .4rem; font-size: .8rem; padding: .2rem .6rem; border: 1px solid #d0d7de; border-radius: 4px; background: #fff; cursor: pointer; }
+  .note { background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px; padding: .6rem .9rem; }
+  details { border: 1px solid #d0d7de; border-radius: 6px; padding: .5rem .9rem; margin: 1rem 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .check { background: #dafbe1; border: 1px solid #4ac26b; border-radius: 6px; padding: .6rem .9rem; }
+  footer { margin-top: 3rem; font-size: .85rem; color: #656d76; border-top: 1px solid #d0d7de; padding-top: .5rem; }
+  #js-status { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Claned test — ADE AI-Assisted Exercises</h1>
+
+<h2>What to check in Claned</h2>
+
+<table>
+  <tr><th>#</th><th>Feature</th><th>How to check</th><th>Works?</th></tr>
+  <tr><td>1</td><td>Page renders with styles</td><td>Headings, tables and coloured boxes look like this file opened in a browser</td><td></td></tr>
+  <tr><td>2</td><td>JavaScript runs</td><td>This line says <b>JavaScript works</b>: <span id="js-status">JavaScript is blocked</span></td><td></td></tr>
+  <tr><td>3</td><td>Copy buttons</td><td>Press <b>Copy</b> on the prompt and the SQL below, paste into a text editor. Line breaks and <code>&lt;your_alias&gt;</code> must be kept</td><td></td></tr>
+  <tr><td>4</td><td>Collapsible answers</td><td>The <i>Check your answers</i> box opens and closes</td><td></td></tr>
+  <tr><td>5</td><td>External script (diagram)</td><td>The diagram at the bottom is drawn as boxes and arrows, not shown as plain text</td><td></td></tr>
+  <tr><td>6</td><td>Links</td><td><a href="https://docs.agiledataengine.com/" target="_blank" rel="noopener">ADE documentation</a> opens in a new tab</td><td></td></tr>
+  <tr><td>7</td><td>Mobile / narrow view</td><td>Make the window narrow: tables and code stay readable</td><td></td></tr>
+</table>
+
+<hr>
+
+<h2>Sample: Exercise 2 — Part B: Find the Root Cause</h2>
+
+<p>Estimated duration: 15 minutes</p>
+
+<p>1) In Snowflake, open <b>Monitoring → Query History</b>, search for the QueryId from Part A, and copy the full error message.</p>
+
+<p>2) Paste the error to ADA and let it explain. <b>Example prompt</b> (to <code>ada-developer</code>):</p>
+
+<div class="block">
+<blockquote class="copy-src">The load of `STG_FLEETOPS_FLEET_MOVEMENT` failed in Snowflake with this error: `&lt;paste the error message&gt;`. Explain what caused it: which value, line and column failed, and why.
+Why did we not see this problem when we inspected the sample file in Exercise 1?</blockquote>
+<button class="copy">Copy</button>
+</div>
+
+<p>3) Query the file in the landing zone directly:</p>
+
+<div class="block">
+<pre class="copy-src"><code>select $3 as vehicle_id, count(*) as row_count, min($6) as first_value
+from '@staging.source_data_azure_stage_dev/FLEETOPS/PACKAGE_DELIVERY/fleet_movement.csv'
+where $6 like '__.__.____%'
+group by 1
+order by 1;</code></pre>
+<button class="copy">Copy</button>
+</div>
+
+<p class="note">ℹ <code>$3</code> and <code>$6</code> are the third and sixth columns of the file: <code>vehicle_id</code> and <code>movement_start_ts</code>.</p>
+
+<h4>✅ Checkpoint B</h4>
+
+<div class="check">
+<table>
+  <tr><th>Question</th><th>Your answer</th></tr>
+  <tr><td>Which value failed, and on which line?</td><td></td></tr>
+  <tr><td>How many rows have the problem, and which vehicles do they belong to?</td><td></td></tr>
+</table>
+</div>
+
+<details>
+<summary>Check your answers</summary>
+<ul>
+  <li>The value <code>15.02.2017 06:57:00</code> on line 10446 in column <code>movement_start_ts</code></li>
+  <li>223 rows, from vehicles <code>VEH-0022</code>, <code>VEH-0023</code> and <code>VEH-0034</code></li>
+</ul>
+</details>
+
+<h3>Diagram test</h3>
+
+<pre class="mermaid">
+flowchart LR
+  F[FLEETOPS files] --> S[Staging]
+  S --> DV[Raw Data Vault]
+  T[Taxi data] --> DV
+  DV --> P[Publish]
+  P --> M[Decision memo]
+</pre>
+
+<footer>Test file v0.1 — not course content. Generated for checking Claned compatibility.</footer>
+
+<script>
+  document.getElementById("js-status").textContent = "JavaScript works";
+
+  function fallbackCopy(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const text = btn.parentElement.querySelector(".copy-src").innerText;
+      const done = function (ok) {
+        btn.textContent = ok ? "Copied" : "Copy failed";
+        setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+      } else {
+        done(fallbackCopy(text));
+      }
+    });
+  });
+</script>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
