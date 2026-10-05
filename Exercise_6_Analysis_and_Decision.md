@@ -105,8 +105,8 @@ What does the result mean for the model?
 
 5) Did the data issues you handled earlier — the kilometres, the NULL dropoffs, the unknown zones — change any verdict?
 
-<details>
-<summary>Discussion</summary>
+<details markdown="1">
+<summary markdown="span">Discussion</summary>
 
 1) Manhattan's fleet is almost fully busy: 2.3 idle hours per day against the required 8, and 9 of its 14 vehicles are box trucks that cannot carry passengers. There is nothing to convert. Entering Manhattan would need new vehicles and drivers — a different decision from the one asked. The naive per-hour analysis says yes; that is the trap.
 

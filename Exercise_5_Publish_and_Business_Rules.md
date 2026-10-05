@@ -132,8 +132,8 @@ Run both queries in Snowflake and compare:
 
 A difference of 0.1 is rounding. A bigger difference means a rule is wrong or missing. Paste your result to ADA and ask which rule could explain it.
 
-<details>
-<summary>Typical differences and their cause</summary>
+<details markdown="1">
+<summary markdown="span">Typical differences and their cause</summary>
 
 | Symptom | Likely cause |
 |---|---|
@@ -164,8 +164,8 @@ Ask yourself, or discuss with ADA:
 - The operations team changes the idle window to 11:00–15:00 in June. Can you still show what the idle hours were in March under the old rule?
 - An auditor asks why Brooklyn's idle hours were 15.8 in the report of 1 March. What can you show?
 
-<details>
-<summary>Discussion</summary>
+<details markdown="1">
+<summary markdown="span">Discussion</summary>
 
 Business logic in publish loads is **recomputed on every run** and **duplicated in every load that needs it**. When a rule changes, history is recalculated with the new rule, and the old figures cannot be reproduced.
 

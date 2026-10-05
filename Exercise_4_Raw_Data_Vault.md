@@ -53,8 +53,8 @@ These loads are the pattern you extend in Part B: the FLEETOPS zone columns get 
 | Which zone keys have no description, and where do they come from? | |
 | How many loads does `H_TAXI_ZONE` have? | |
 
-<details>
-<summary>Check your answers</summary>
+<details markdown="1">
+<summary markdown="span">Check your answers</summary>
 
 - 269 rows
 - Keys `267`, `268` and `269`. They appear in the taxi trip data but in neither zone lookup file, so the hub has them but the satellite does not. The basic training check joined the hub to the satellite, which hid them
@@ -99,8 +99,8 @@ Check:
 
 If you accept a deviation from the design, ask ADA to update the design document too. The design must describe what is actually built.
 
-<details>
-<summary>NULL zone IDs — what to look for</summary>
+<details markdown="1">
+<summary markdown="span">NULL zone IDs — what to look for</summary>
 
 ADE's hash key and business key transformations turn a NULL into `'-1'`. Unless the load filters the NULL rows out, the 40 movements without a dropoff zone create a new hub row with the key `'-1'`.
 

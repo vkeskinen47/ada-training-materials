@@ -393,8 +393,8 @@ FROM
 
 The default template fits the basic-training folder layout, not this source. Before you read on, try to find **three problems** yourself, using what you know from Part B and the folder layout above.
 
-<details>
-<summary>The three problems</summary>
+<details markdown="1">
+<summary markdown="span">The three problems</summary>
 
 | Problem | Why it matters |
 |---|---|

@@ -86,8 +86,8 @@ If it creates a new hub, **example prompt:**
 
 > The zone IDs in FLEETOPS are the same NYC taxi zone IDs as in basic training. Do not create a new hub for them. Use the existing hub `rdv_<your_alias>.H_TAXI_ZONE` from `packages/traffic_dv_<your_alias>/h_taxi_zone.yaml`. Update the design and the diagram.
 
-<details>
-<summary>Why this matters</summary>
+<details markdown="1">
+<summary markdown="span">Why this matters</summary>
 
 If the design creates a new hub, the fleet data and the taxi data never meet. The comparison PackageDelivery needs — fleet capacity versus taxi demand **in the same zones** — would require joining two hubs that represent the same thing. Data Vault's strength is that a new source attaches to existing business keys.
 

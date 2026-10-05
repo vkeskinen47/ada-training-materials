@@ -90,8 +90,8 @@ You can answer these questions:
 | From which date does the problem start? | |
 | Why did ADA not see this problem in Exercise 1? | |
 
-<details>
-<summary>Check your answers</summary>
+<details markdown="1">
+<summary markdown="span">Check your answers</summary>
 
 - The value `15.02.2017 06:57:00` on line 10446 in column `movement_start_ts`
 - 223 rows, from vehicles `VEH-0022`, `VEH-0023` and `VEH-0034`
@@ -118,8 +118,8 @@ There are several ways to handle this. Think about each before you read on:
 | C. Convert both formats inside the COPY INTO statement | The staging table gets real timestamps right away |
 | D. Load the two timestamp columns into staging as text, and convert them in the next layer | Staging shows exactly what the source sent |
 
-<details>
-<summary>Discussion</summary>
+<details markdown="1">
+<summary markdown="span">Discussion</summary>
 
 - **A** — do it anyway, but you still need a fix today.
 - **B** — Snowflake skips the bad rows. The load is green and 223 movements are silently missing. That is worse than a failed load.

@@ -1,7 +1,5 @@
 title: ADE for Data Engineers — AI-Assisted Development
 description: Exercises
 theme: jekyll-theme-primer
-kramdown:
-  parse_block_html: true
 exclude:
   - README.md
