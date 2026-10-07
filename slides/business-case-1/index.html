@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Case, Part 5: Background and Staging</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #17171c; color: #fdfdfe; font-family: system-ui, sans-serif; }
+  #stage { position: absolute; inset: 0 0 44px 0; display: flex; align-items: center; justify-content: center; }
+  #slide { max-width: 100%; max-height: 100%; aspect-ratio: 16 / 9; object-fit: contain; }
+  #bar { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; display: flex; align-items: center;
+         justify-content: center; gap: 16px; font-size: 14px; color: #a8b3c3; }
+  button, a { background: none; border: 1px solid #a8b3c3; color: #fdfdfe; border-radius: 4px; padding: 4px 12px;
+              font-size: 14px; cursor: pointer; text-decoration: none; }
+  button:disabled { opacity: .35; cursor: default; }
+</style>
+</head>
+<body>
+<div id="stage"><img id="slide" alt=""></div>
+<div id="bar">
+  <button id="prev" aria-label="Previous slide">&larr;</button>
+  <span id="count"></span>
+  <button id="next" aria-label="Next slide">&rarr;</button>
+  <a href="business-case-1.pdf" target="_blank" rel="noopener">PDF</a>
+</div>
+<script>
+  const total = 12, version = "549a0f00";
+  let n = Math.min(Math.max(parseInt(location.hash.slice(1)) || 1, 1), total);
+  const img = document.getElementById("slide"), count = document.getElementById("count");
+  const prev = document.getElementById("prev"), next = document.getElementById("next");
+  const src = i => "slides/" + String(i).padStart(3, "0") + ".png?v=" + version;
+  function show(i) {
+    n = i; img.src = src(n); img.alt = "Slide " + n + " of " + total;
+    count.textContent = n + " / " + total;
+    prev.disabled = n === 1; next.disabled = n === total;
+    history.replaceState(null, "", "#" + n);
+    if (n < total) new Image().src = src(n + 1);
+  }
+  prev.onclick = () => n > 1 && show(n - 1);
+  next.onclick = () => n < total && show(n + 1);
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === " ") next.onclick();
+    if (e.key === "ArrowLeft") prev.onclick();
+  });
+  let touchX = null;
+  document.addEventListener("touchstart", e => touchX = e.touches[0].clientX);
+  document.addEventListener("touchend", e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev).onclick();
+  });
+  show(n);
+</script>
+</body>
+</html>
