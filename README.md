@@ -20,7 +20,7 @@ ADA does the construction: it writes the YAML, runs the `ada` commands and talks
 
 | # | Exercise | Duration |
 |---|---|---|
-| 1 | [ADA Setup and New Source to Staging](Exercise_1_ADA_Setup_and_Staging.md) | 2 h |
+| 1 | [ADA Setup and New Source to Staging](Exercise_1_ADA_Setup_and_Staging.md) | 2 h 20 min |
 | 2 | [Diagnose and Fix a Failed Load](Exercise_2_Diagnose_and_Fix.md) | 45 min |
 | 3 | [Design the Model with ADA](Exercise_3_Design_the_Model.md) | 1 h |
 | 4 | [Generate and Load the Raw Data Vault](Exercise_4_Raw_Data_Vault.md) | 1 h 30 min |

@@ -4,77 +4,17 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ---
 
-## How these exercises work
-
-These exercises are different from basic training. There are no click-by-click instructions. You give instructions to the AI agent **ADA**, and ADA writes the YAML, runs the `ada` commands and talks to Agile Data Engine for you.
-
-Your job is to:
-
-- **Specify** — tell ADA clearly what you want
-- **Review** — read what ADA proposes before you accept it, and reject it when it is wrong
-- **Verify** — confirm the result against the checkpoints in this document
-
-Each step gives you an **example prompt**. You do not have to use it word for word. Each step also lists what ADA should do **under the hood**, so you can tell when it goes off track. ADA asks for permission before running terminal commands. Read the command before you approve it.
-
-ADA often suggests what to do next at the end of its answer. You may follow its suggestions when they match the exercise. When they do not, tell ADA what you want instead.
-
-ℹ **The standard routine.** Whenever you change entities, take them to ADE in this order. ADA knows the routine; your job is to read each result before the next step.
-
-| Step | Command | What you check |
-|---|---|---|
-| 1. Validate | `ada validate` | No errors |
-| 2. Plan | `ada plan` | Only the changes you expect |
-| 3. Dry run | `ada push --dry-run` | ADE accepts the change |
-| 4. Push | `ada push` | The upserted count matches the plan |
-| 5. Deploy | `ada deploy commit --wait` | Every package shows `SUCCESS` |
-
-ℹ AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
-
-### Choose your AI tool
-
-This document uses **GitHub Copilot in VS Code** as the reference. ADA also supports Claude Code.
-
-| Tool | How to start ADA | Notes |
-|---|---|---|
-| GitHub Copilot in VS Code | Open Copilot Chat in **Agent** mode and select the `ada-developer` agent | Reference tool for these exercises |
-| Claude Code | Run `ada init --tool claude` instead of `ada init` in Part A. Then start `claude` in the project folder | Supported. Example prompts work as written |
-| Other agents that read `AGENTS.md` (e.g. Cursor, Codex) | Open the project folder in the tool | May work, but not tested in this training. Your trainer cannot support them |
-
-ℹ **Costs.** ADA itself is free to use in this training, but the AI tool is not. You need your own paid subscription (for example GitHub Copilot Pro or Claude Pro), and the model usage of these exercises is charged to that subscription. See the course prerequisites for details.
-
----
-
 ## The task
 
-Estimated duration: 2 hours
+Estimated duration: 2 hours 20 minutes
 
-PackageDelivery has not yet decided whether to enter taxi operations. To prepare the decision, the company wants to compare taxi demand with its own fleet. The fleet management system **FLEETOPS** exports three files:
-
-| File | Content |
-|---|---|
-| `fleet_vehicle.csv` | One row per vehicle: type, passenger seats, cost per mile, home borough |
-| `fleet_shift.csv` | One row per driver shift: vehicle, depot, start and end time |
-| `fleet_movement.csv` | One row per vehicle movement between two NYC taxi zones |
-
-In this module you will install ADA, connect it to your ADE tenant and bring the FLEETOPS files into the staging layer.
-
-**Connection details:**
-
-| | |
-|---|---|
-| Tenant ID | `s7922169` |
-| Installation name | `datahub` |
-| API keys | A **design** key and a **dev** key (key ID and secret for each). Your trainer sends them to you by email |
-
-**Requirements:** Python 3.10 or newer, Git, and an AI tool from the table above.
-
-ℹ **Did you do the basic training in this tenant?** If you did, you will pull your own packages in Part A. If you did not, or your packages are gone, you will clone the training model packages instead. Both options are described in Part A, under *Bring your basic-training work into the project*. Option 2 takes about 30 minutes more.
+In this exercise you install ADA, connect it to your ADE tenant, bring the basic-training pipeline into your project, and add the new source FLEETOPS to the staging layer. The story behind it is in *Business Case 1*.
 
 ---
 
 ### Part A — Install ADA and Connect to ADE
 
-Estimated duration: 40 minutes
+Estimated duration: 70 minutes
 
 #### Watch: Admin UI
 
@@ -112,7 +52,7 @@ curl -fsSL https://artifacts.saas.agiledataengine.com/install.sh | bash
 
 Windows (PowerShell): `irm https://artifacts.saas.agiledataengine.com/install.ps1 | iex`
 
-5) When prompted, enter tenant ID `s7922169`, installation name `datahub`, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
+5) When prompted, enter the tenant ID and installation name from your registration email, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
 
 | If you see | It means | What to do |
 |---|---|---|
@@ -160,8 +100,8 @@ ada doctor
 The output must end with both lines:
 
 ```
-✓ ADE environment reachable: s7922169/datahub/design
-✓ ADE environment reachable: s7922169/datahub/dev
+✓ ADE environment reachable: <tenant ID>/<installation>/design
+✓ ADE environment reachable: <tenant ID>/<installation>/dev
 ```
 
 #### Optional: connect your AI tool to ADE with MCP
@@ -187,7 +127,10 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 #### Give ADA your alias
 
-From now on, you work through ADA. Start ADA in your AI tool (see *Choose your AI tool*).
+From now on, you work through ADA. Start ADA in your AI tool:
+
+- **GitHub Copilot in VS Code:** open Copilot Chat in **Agent** mode and select the `ada-developer` agent
+- **Claude Code:** start `claude` in the project folder
 
 Many trainees share the same ADE tenant, so every schema and package needs your alias. Set it for all entity types at once, so that nothing you create later lands in a shared default schema.
 
@@ -206,35 +149,15 @@ Many trainees share the same ADE tenant, so every schema and package needs your 
 
 ℹ Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
 
-#### Bring your basic-training work into the project
+ℹ AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
+
+#### Bring the basic-training pipeline into the project
 
 In a later exercise you will connect the fleet data to the `H_TAXI_ZONE` hub from basic training. ADA needs that hub as YAML in your project, and the hub needs data in Snowflake.
 
-Choose **one** option:
-
-- **Option 1** — you completed the basic training in this tenant and your packages still exist
-- **Option 2** — you have no basic-training packages in this tenant
-
-##### Option 1 — Pull your own packages
-
-**Example prompt:**
-
-> Pull all my packages from ADE. They are tagged `#<your_alias>`.
-
-**Under the hood:** `ada pull --tag <your_alias>`
-
-##### ✅ Checkpoint A2 (Option 1)
-
-- `packages/` contains your basic-training packages, for example `taxidata_staging_<your_alias>/`, `traffic_dv_<your_alias>/` and `traffic_publish_<your_alias>/`
-- `packages/traffic_dv_<your_alias>/` contains `h_taxi_zone.yaml`
-
-Open `h_taxi_zone.yaml`. This is the hub you built by clicking in Designer. It is now a text file that you can version, review and change through an agent.
-
-##### Option 2 — Clone the training model packages
-
 The starter project contains a copy of the complete basic-training pipeline in `model_packages/`: `TAXIDATA_STAGING_ZZALIAS`, `TRAFFIC_DV_ZZALIAS` and `TRAFFIC_PUBLISH_ZZALIAS`. Wherever an alias belongs, the copy has the placeholder `zzalias` (`ZZALIAS` in uppercase names). You will turn the copy into your own packages, deploy them and load the taxi data.
 
-ℹ The copy contains no entity IDs, so pushing it can only create new entities. It cannot change anyone else's packages.
+ℹ The copy contains no entity IDs, so pushing it can only create new entities. It cannot change anyone else's packages. Use an alias you have not used in this tenant before. If you did the basic training with the same alias, the plan in step 2 shows `~` (modify) lines instead of only `+` lines.
 
 1) Create a schedule for the taxi pipeline. **Example prompt:**
 
@@ -256,6 +179,16 @@ The starter project contains a copy of the complete basic-training pipeline in `
 
 ℹ The plan has no satellite current views (`S_..._C`). ADE creates them automatically for each satellite.
 
+ℹ **The standard routine.** Whenever you change entities, take them to ADE in this order. ADA knows the routine; your job is to read each result before the next step.
+
+| Step | Command | What you check |
+|---|---|---|
+| 1. Validate | `ada validate` | No errors |
+| 2. Plan | `ada plan` | Only the changes you expect |
+| 3. Dry run | `ada push --dry-run` | ADE accepts the change |
+| 4. Push | `ada push` | The upserted count matches the plan |
+| 5. Deploy | `ada deploy commit --wait` | Every package shows `SUCCESS` |
+
 3) Push and deploy. **Example prompt:**
 
 > Push my three taxi packages to ADE in one push. Then commit `CONFIG_LOAD_SCHEDULES` and wait for the deployment, and then commit my three taxi packages in the order staging, DV, publish and wait for each deployment.
@@ -275,7 +208,7 @@ NOTE! The alias is case-sensitive.
 
 > Trigger the DAG `TAXIDATA_<YOUR_ALIAS>` in dev and wait for it to finish.
 
-##### ✅ Checkpoint A2 (Option 2)
+#### ✅ Checkpoint A2
 
 - The DAG `TAXIDATA_<YOUR_ALIAS>` succeeds
 - `packages/traffic_dv_<your_alias>/` contains `h_taxi_zone.yaml`
