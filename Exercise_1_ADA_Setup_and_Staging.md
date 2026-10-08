@@ -18,7 +18,7 @@ Estimated duration: 70 minutes
 
 #### Watch: Admin UI
 
-[TBD: link to the Admin UI video]
+[Watch the Admin UI video](https://youtu.be/kbj3EmWxrwE)
 
 In this training your trainer provides the API keys. In your own organisation, keys are created in the ADE Admin UI. Watch the video so you know where a key comes from, what permissions it needs, and why an installation can fail.
 
