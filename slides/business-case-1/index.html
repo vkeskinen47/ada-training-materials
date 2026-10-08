@@ -21,10 +21,9 @@
   <button id="prev" aria-label="Previous slide">&larr;</button>
   <span id="count"></span>
   <button id="next" aria-label="Next slide">&rarr;</button>
-  <a href="business-case-1.pdf" target="_blank" rel="noopener">PDF</a>
 </div>
 <script>
-  const total = 12, version = "549a0f00";
+  const total = 12, version = "0d7ca4b5";
   let n = Math.min(Math.max(parseInt(location.hash.slice(1)) || 1, 1), total);
   const img = document.getElementById("slide"), count = document.getElementById("count");
   const prev = document.getElementById("prev"), next = document.getElementById("next");
