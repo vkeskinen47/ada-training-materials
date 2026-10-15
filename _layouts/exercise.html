@@ -1,0 +1,50 @@
+---
+layout: default
+---
+<style>
+  .exercise-cover {
+    margin: 1.5rem auto 2.5rem;
+    max-width: 760px;
+    text-align: center;
+  }
+  .exercise-cover__logo {
+    display: block;
+    width: 280px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 0.5rem;
+  }
+  .exercise-cover__label {
+    margin: 0;
+    color: #24292f;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .exercise-cover__rule {
+    width: 70%;
+    max-width: 640px;
+    margin: 2rem auto 2.25rem;
+    border: 0;
+    border-top: 2px solid #24292f;
+  }
+  @media (max-width: 600px) {
+    .exercise-cover {
+      margin: 1rem auto 1.75rem;
+    }
+    .exercise-cover__logo {
+      width: 220px;
+    }
+    .exercise-cover__rule {
+      width: 82%;
+      margin: 1.5rem auto 1.75rem;
+    }
+  }
+</style>
+<header class="exercise-cover">
+  <img class="exercise-cover__logo" src="{{ '/assets/images/ADE-logo-black.png' | relative_url }}" alt="Agile Data Engine">
+  <p class="exercise-cover__label">for Data Engineers</p>
+  <hr class="exercise-cover__rule">
+</header>
+<main>
+  {{ content }}
+</main>

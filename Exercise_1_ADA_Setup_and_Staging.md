@@ -1,3 +1,7 @@
+---
+layout: exercise
+---
+
 # Exercise 1 — ADA Setup and New Source to Staging
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
@@ -348,27 +352,23 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Review:** check all three `.sql` files and the `schedulingName` in all three YAML files.
 
-#### Push and check the generated SQL
+#### Validate and push the staging package
 
-4) **Example prompt:**
+4) Review the local files, then validate and run a dry run. **Example prompt:**
 
-> Validate the FLEETOPS package, show me the plan, and push it to ADE.
-
-**Under the hood:** `ada validate`, `ada plan`, `ada push -p STG_FLEETOPS_<YOUR_ALIAS>`
-
-5) **Example prompt:**
-
-> Show me the SQL that ADE generates for the FLEETOPS staging loads.
-
-**Under the hood:** `ada code preview -p STG_FLEETOPS_<YOUR_ALIAS>`
+> Check all three FLEETOPS SQL sidecars and their matching STAGE YAML files. Confirm each COPY INTO path points to the matching single file, each file format has `skip_header=1`, and each load has the schedule `FLEETOPS_<YOUR_ALIAS>`. Then run `ada validate`, show me the plan, and run a push dry run. Do not push yet.
 
 #### ✅ Checkpoint C1
 
-In the generated SQL:
+- Each local SQL sidecar points to its matching single file under `'<snowflake_azure_stage>/FLEETOPS/PACKAGE_DELIVERY/'` and has `skip_header=1`.
+- Each STAGE YAML has `schedulingName: FLEETOPS_<YOUR_ALIAS>`.
+- `ada validate` passes, the plan shows only the three expected STAGE entity changes, and the push dry run succeeds.
 
-- The path of the movement load reads `'<snowflake_azure_stage>/FLEETOPS/PACKAGE_DELIVERY/fleet_movement.csv'`. ADE has already replaced `<source_system_name>` with `FLEETOPS`. `<snowflake_azure_stage>` stays unresolved in the preview. That is expected: it is an environment variable, and ADE resolves it only when the load runs in DEV or PROD.
-- The file format contains `skip_header=1`.
-- The SELECT list maps file columns by position (`$1 AS movement_id`, `$2 AS shift_id`, ...), and the technical attributes get generated values (`'FLEETOPS' AS stg_source_system`).
+5) Push the package only after the review passes. **Example prompt:**
+
+> Push the FLEETOPS staging package to ADE.
+
+**Under the hood:** `ada push -p STG_FLEETOPS_<YOUR_ALIAS>`
 
 #### Deploy and run
 
