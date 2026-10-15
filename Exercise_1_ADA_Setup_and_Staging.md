@@ -211,7 +211,7 @@ CALL ade_training_dev_saas.staging.load_files_to_blob ('<your_alias>', 2);
 > **Important:** The alias is case-sensitive.
 {: .exercise-note}
 
-5) Open DEV Workflow Orchestration, find the DAG `TAXIDATA_<YOUR_ALIAS>`, switch it <span class="ui-action">on</span> with the toggle, and check in the <span class="ui-action">Graph view</span> that your loads are there. Then trigger it. **Example prompt:**
+5) Open DEV <span class="ui-action">Workflow Orchestration</span>, find the DAG `TAXIDATA_<YOUR_ALIAS>`, switch it <span class="ui-action">on</span> with the toggle, and check in the <span class="ui-action">Graph view</span> that your loads are there. Then trigger it. **Example prompt:**
 
 > Trigger the DAG `TAXIDATA_<YOUR_ALIAS>` in dev and wait for it to finish.
 
@@ -390,7 +390,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 > **Note:** `ada deploy commit --wait` may print `Deployment RUNNING` even though every package below it shows `SUCCESS`. This only means the overall deployment had not closed when ADA stopped waiting. Trust the package lines.
 {: .exercise-note}
 
-7) Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`. Switch it <span class="ui-action">on</span> with the toggle, then open the <span class="ui-action">Graph view</span> and check that all three staging loads are there. A DAG that is switched off does not run.
+7) Open DEV <span class="ui-action">Workflow Orchestration</span> and find the DAG `FLEETOPS_<YOUR_ALIAS>`. Switch it <span class="ui-action">on</span> with the toggle, then open the <span class="ui-action">Graph view</span> and check that all three staging loads are there. A DAG that is switched off does not run.
 
 8) **Example prompt:**
 
@@ -402,7 +402,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **The DAG fails. This is expected.**
 
-Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`:
+Open DEV <span class="ui-action">Workflow Orchestration</span> and find the DAG `FLEETOPS_<YOUR_ALIAS>`:
 
 | Load | Expected state |
 |---|---|

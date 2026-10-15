@@ -1,22 +1,16 @@
-# Exercise 4 — Generate and Load the Raw Data Vault
+---
+layout: exercise
+module_label: "Module 2: Exercise 4"
+title: "Generate and Load the Raw Data Vault"
+duration: "1 hour 30 minutes"
+summary: "Generate and load the FLEETOPS Raw Data Vault, extend the shared H_TAXI_ZONE hub, and verify that fleet and taxi data meet on the same zones."
+---
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
 
 ---
 
-## The task
-
-Estimated duration: 1 hour 30 minutes
-
-Your Data Vault design is approved. Now ADA generates the entities from it, you take them to ADE, and you load the FLEETOPS data into the Raw Data Vault.
-
-The most important entity in this exercise is one you do not create: the existing `H_TAXI_ZONE`. The fleet data connects to the taxi data through it. When this exercise is done, the same hub holds the zones of both businesses — and you will check that it still holds the right number of rows.
-
-**Result of this exercise:** the FLEETOPS Raw Data Vault entities are deployed to DEV and loaded, and `H_TAXI_ZONE` is loaded from both the taxi data and the fleet data.
-
----
-
-### Part A — Measure the Starting Point
+## Part A — Measure the Starting Point
 
 Estimated duration: 10 minutes
 
@@ -45,7 +39,7 @@ order by 1;
 
 These loads are the pattern you extend in Part B: the FLEETOPS zone columns get loads of the same kind.
 
-#### ✅ Checkpoint A
+### Checkpoint A
 
 | Question | Your answer |
 |---|---|
@@ -62,11 +56,12 @@ These loads are the pattern you extend in Part B: the FLEETOPS zone columns get 
 
 </details>
 
-ℹ Write down 269. You will check it again in Part D.
+> **Note:** Write down 269. You will check it again in Part D.
+{: .exercise-note}
 
 ---
 
-### Part B — Generate the Entities
+## Part B — Generate the Entities
 
 Estimated duration: 30 minutes
 
@@ -110,7 +105,7 @@ Avoid a custom formula that maps NULL to something else, such as `'UNKNOWN'`. Th
 
 </details>
 
-#### ✅ Checkpoint B
+### Checkpoint B
 
 - `ada validate` passes
 - The plan shows only new entities in new packages, and one modified entity: `H_TAXI_ZONE`
@@ -118,7 +113,7 @@ Avoid a custom formula that maps NULL to something else, such as `'UNKNOWN'`. Th
 
 ---
 
-### Part C — Deploy and Run
+## Part C — Deploy and Run
 
 Estimated duration: 25 minutes
 
@@ -128,11 +123,9 @@ Estimated duration: 25 minutes
 
 **Under the hood:** `ada push --dry-run`, then `ada push` with every package. The packages reference each other, so they are pushed in one batch. `ada push` refuses uncommitted changes, so ADA commits the YAML to Git first.
 
-2) Now that the entities are in ADE, look at the SQL ADE will run for the dropoff zones. **Example prompt:**
+2) Before deployment, review the mapping you generated locally. **Example prompt:**
 
-> Show me the code preview of the `H_TAXI_ZONE` load from the FLEETOPS dropoff zone. What happens to the rows where `dropoff_locationid` is NULL?
-
-**Under the hood:** `ada code preview` for the package `TRAFFIC_DV_<YOUR_ALIAS>`, against the design environment (no `--env`). The preview shows what is in ADE, so it only works after the push.
+> Show me the FLEETOPS dropoff mapping in the local `packages/traffic_dv_<your_alias>/h_taxi_zone.yaml`. Explain how its key and hash key are derived for a normal value and for a NULL value. Compare this with the decision in my design document.
 
 3) Commit the packages. **Example prompt:**
 
@@ -144,27 +137,28 @@ Estimated duration: 25 minutes
 
 **Under the hood:** `ada workflow describe --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`.
 
-Then open DEV Workflow Orchestration and the DAG `FLEETOPS_<YOUR_ALIAS>` in the Graph view, which shows the same loads and their order.
+Then open DEV <span class="ui-action">Workflow Orchestration</span> and the DAG `FLEETOPS_<YOUR_ALIAS>` in the <span class="ui-action">Graph view</span>, which shows the same loads and their order.
 
 - Are the new Data Vault loads there?
 - Are the new `H_TAXI_ZONE` loads in **this** DAG, or in `TAXIDATA_<YOUR_ALIAS>`?
 
-ℹ ADE builds the DAGs from load dependencies. Only the staging loads have a schedule; every Data Vault load inherits it from the load it depends on. The new `H_TAXI_ZONE` loads read FLEETOPS staging, so they run with FLEETOPS, even though the entity belongs to a taxi package. You do not set a schedule on Data Vault loads.
+> **Note:** ADE builds the DAGs from load dependencies. Only the staging loads have a schedule; every Data Vault load inherits it from the load it depends on. The new `H_TAXI_ZONE` loads read FLEETOPS staging, so they run with FLEETOPS, even though the entity belongs to a taxi package. You do not set a schedule on Data Vault loads.
+{: .exercise-note}
 
 5) Trigger the DAG. **Example prompt:**
 
 > Trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
 
-#### ✅ Checkpoint C
+### Checkpoint C
 
-- The code preview shows the NULL zone handling written in your design
+- The local `H_TAXI_ZONE` YAML mapping uses the NULL handling written in your design
 - All packages deployed with `SUCCESS`
 - The DAG `FLEETOPS_<YOUR_ALIAS>` contains the new Data Vault loads and the new `H_TAXI_ZONE` loads
 - The DAG succeeds
 
 ---
 
-### Part D — Verify
+## Part D — Verify
 
 Estimated duration: 25 minutes
 
@@ -188,7 +182,7 @@ from ADE_TRAINING_DEV_SAAS.RDV_<your_alias>.H_TAXI_ZONE;
 
 The FLEETOPS data uses the same NYC zone IDs as the taxi data. Three new loads write into the hub, but no new real zone should appear. `unknown_zone_rows` counts keys that are not zone numbers, such as `'-1'`.
 
-#### ✅ Checkpoint D
+### Checkpoint D
 
 | Your result | What it means |
 |---|---|
@@ -204,7 +198,7 @@ If you got 270 without having decided it, you have found a *silent* data quality
 
 ---
 
-### Summary of Exercise 4
+## Summary of Exercise 4
 
 You have:
 
@@ -218,7 +212,7 @@ The fleet data and the taxi data now meet in `H_TAXI_ZONE`. Next, you will turn 
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|

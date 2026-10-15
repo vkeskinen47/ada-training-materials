@@ -1,22 +1,16 @@
-# Exercise 5 — Publish Layer and Business Rules
+---
+layout: exercise
+module_label: "Module 3: Exercise 5"
+title: "Publish Layer and Business Rules"
+duration: "1 hour 30 minutes"
+summary: "Define business rules for fleet capacity, implement them in publish entities, and verify the metrics against reference figures."
+---
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
 
 ---
 
-## The task
-
-Estimated duration: 1 hour 30 minutes
-
-The Raw Data Vault holds the fleet data as the source sent it: timestamps in two formats, distances in two units, and no idea of what *idle* means. PackageDelivery's question cannot be answered from that yet.
-
-In this exercise you turn business rules into a publish layer: facts and dimensions that answer the question. You state the rules, ADA designs and generates the entities, and you verify the result against known figures.
-
-**Result of this exercise:** fleet facts and a vehicle dimension deployed to DEV and loaded, with the business rules implemented in their loads, and connected to the existing taxi zone dimension.
-
----
-
-### The business rules
+## The business rules
 
 PackageDelivery's operations team gives you these rules:
 
@@ -30,7 +24,7 @@ Why 10:00–15:00: deliveries peak in the morning and the afternoon, so the midd
 
 ---
 
-### Part A — Design the Publish Layer
+## Part A — Design the Publish Layer
 
 Estimated duration: 20 minutes
 
@@ -56,7 +50,7 @@ Estimated duration: 20 minutes
 
 Tell ADA what to change. Repeat until every check passes.
 
-#### ✅ Checkpoint A
+### Checkpoint A
 
 - `design/publish_design_fleetops.md` exists and states the grain of every fact
 - Every rule R1–R5 is mapped to exactly one load
@@ -66,7 +60,7 @@ Tell ADA what to change. Repeat until every check passes.
 
 ---
 
-### Part B — Generate, Deploy and Run
+## Part B — Generate, Deploy and Run
 
 Estimated duration: 30 minutes
 
@@ -76,29 +70,31 @@ Estimated duration: 30 minutes
 
 **Under the hood:** ADA writes the entity YAML and an SQL file for each load under `packages/`, and runs `ada validate` and `ada plan`.
 
-ℹ `ada validate` and `ada plan` check the structure, not whether the SQL calculates the right thing. That is what step 3 and Part C are for.
+> **Note:** `ada validate` and `ada plan` check the structure, not whether the SQL calculates the right thing. That is what step 3 and Part C are for.
+{: .exercise-note}
 
 2) Review the plan. It must show `+` only for the new publish entities, and no changes to `F_TRIP` or any Data Vault entity. `D_TAXI_ZONE` may change only if your design decided so.
 
 3) Read the SQL of the idle time load. **Example prompt:**
 
-> Explain the SQL that calculates idle time, step by step, in plain language. Which shifts and movements does it read, how does it limit them to 10:00–15:00, and which timestamp rule does it use?
+> Read the local SQL sidecar for the idle-time load and explain its calculation step by step in plain language. Which shifts and movements does it read, how does it limit them to 10:00–15:00, and which timestamp rule does it use?
 
-ℹ You do not need to write this SQL yourself. You need to understand it well enough to tell whether it implements rule R4. If ADA's explanation and the rule disagree, the SQL is wrong.
+> **Note:** You do not need to write this SQL yourself. You need to understand it well enough to tell whether it implements rule R4. If ADA's explanation and the rule disagree, the SQL is wrong.
+{: .exercise-note}
 
 4) Push and check the code. **Example prompt:**
 
-> Push the publish package with a dry run first. Then show me the code preview of the idle time load. Do not commit yet.
+> Push the publish package with a dry run first. Do not commit it in ADE yet.
 
-**Under the hood:** `ada push --dry-run`, `ada push`, then `ada code preview` against the design environment (no `--env`).
+**Under the hood:** `ada push --dry-run`, then `ada push`. The load logic is reviewed from the local SQL sidecar.
 
-5) When the preview matches ADA's explanation, deploy and run. **Example prompt:**
+5) When the local SQL review and dry run pass, deploy and run. **Example prompt:**
 
 > Commit the publish package in ADE with the message "FLEETOPS publish layer" and wait for the deployment. List the loads of the DAG `FLEETOPS_<YOUR_ALIAS>` in dev, and tell me whether the new publish loads are there. Then trigger the DAG, wait for it to finish, and show me which publish loads ran and whether they succeeded.
 
 **Under the hood:** `ada deploy commit ... --wait`, `ada workflow describe --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`, `ada dag trigger ... --wait`, and the load statistics of the run.
 
-#### ✅ Checkpoint B
+### Checkpoint B
 
 - The plan shows only new publish entities
 - You can explain in one sentence how the idle time is calculated
@@ -106,7 +102,7 @@ Estimated duration: 30 minutes
 
 ---
 
-### Part C — Verify Against Known Figures
+## Part C — Verify Against Known Figures
 
 Estimated duration: 25 minutes
 
@@ -144,7 +140,7 @@ A difference of 0.1 is rounding. A bigger difference means a rule is wrong or mi
 
 </details>
 
-#### ✅ Checkpoint C
+### Checkpoint C
 
 - Every row count matches its expected count
 - Every borough matches the table within 0.1
@@ -152,7 +148,7 @@ A difference of 0.1 is rounding. A bigger difference means a rule is wrong or mi
 
 ---
 
-### Part D — Where Does the Business Logic Live?
+## Part D — Where Does the Business Logic Live?
 
 Estimated duration: 15 minutes
 
@@ -179,7 +175,7 @@ Finally, commit your design documents. The publish package was committed to Git 
 
 ---
 
-### Part E — Semantic View *(optional)*
+## Part E — Semantic View *(optional)*
 
 Estimated duration: 20 minutes
 
@@ -201,7 +197,7 @@ A semantic view describes your facts, dimensions and metrics so that people and 
 
 ---
 
-### Summary of Exercise 5
+## Summary of Exercise 5
 
 You have:
 
@@ -214,12 +210,12 @@ You now have everything needed to answer PackageDelivery's question. In the next
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
 | `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
 | The design creates a new zone dimension | Point ADA to `packages/traffic_publish_<your_alias>/d_taxi_zone.yaml` |
 | The plan shows changes to `F_TRIP`, or to `D_TAXI_ZONE` although your design did not decide so | ADA modified the existing taxi entities. Ask it to revert them and only reference them |
-| The publish tables are empty after the DAG | The publish loads did not run in this DAG. Ask ADA to list the loads of `FLEETOPS_<YOUR_ALIAS>` (`ada workflow describe`), or check the Graph view |
+| The publish tables are empty after the DAG | The publish loads did not run in this DAG. Ask ADA to list the loads of `FLEETOPS_<YOUR_ALIAS>` (`ada workflow describe`), or check the <span class="ui-action">Graph view</span> |
 | Fleet movements disappear when joined to `D_TAXI_ZONE` | Some zone keys are not in the dimension, for example an unknown zone from Exercise 4. Decide whether they should be, and record it in the design |

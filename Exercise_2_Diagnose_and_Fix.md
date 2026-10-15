@@ -1,36 +1,33 @@
-# Exercise 2 — Diagnose and Fix a Failed Load
+---
+layout: exercise
+module_label: "Module 1: Exercise 2"
+title: "Diagnose and Fix a Failed Load"
+duration: "45 minutes"
+summary: "Find why the FLEETOPS movement load failed, identify the timestamp pattern, and fix staging without dropping records."
+---
 
-Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
+Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias.
+
+> **Note:** In real projects, a failed overnight load is a normal part of the job. The skill is not avoiding failures but diagnosing them quickly and fixing them in the right place.
+{: .exercise-note}
 
 ---
 
-## The task
-
-Estimated duration: 45 minutes
-
-At the end of Exercise 1, the DAG `FLEETOPS_<YOUR_ALIAS>` failed. Vehicles and shifts are in staging, but `STG_FLEETOPS_FLEET_MOVEMENT` is empty. Without movements, PackageDelivery cannot see where its fleet drives or where it stands idle — the decision cannot be made.
-
-In this exercise you will find out what failed and why, decide how to handle it, and fix the load.
-
-ℹ In real projects, a failed overnight load is a normal part of the job. The skill is not avoiding failures but diagnosing them quickly and fixing them in the right place.
-
----
-
-### Part A — Find What Failed
+## Part A — Find What Failed
 
 Estimated duration: 15 minutes
 
 Use either path, or both and compare.
 
-#### Path 1: Workflow Orchestration
+### Path 1: Workflow Orchestration
 
-1) Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`.
+1) Open DEV <span class="ui-action">Workflow Orchestration</span> and find the DAG `FLEETOPS_<YOUR_ALIAS>`.
 
-2) Open the latest run. Click the failed load (the red box) and press **Logs**.
+2) Open the latest run. Click the failed load and press <span class="ui-action">Logs</span>.
 
 3) Find the error message and the **QueryId**.
 
-#### Path 2: The ada-ops agent
+### Path 2: The ada-ops agent
 
 `ada-ops` is ADA's operations agent. It reads workflow runs, load statistics and errors from ADE. Select the `ada-ops` agent instead of `ada-developer`.
 
@@ -40,7 +37,7 @@ Use either path, or both and compare.
 
 **Under the hood:** `ada workflow diagnose --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`. It finds the failed run, lists the failed loads with their error messages, and fetches the generated SQL of the failing load. If you configured MCP in Exercise 1, ADA may query ADE through the MCP server instead.
 
-#### ✅ Checkpoint A
+### Checkpoint A
 
 - Two loads succeeded: `..._fleet_vehicle_...` and `..._fleet_shift_...`
 - One load failed: `..._fleet_movement_...`
@@ -50,11 +47,11 @@ Notice the **two spaces** in `Timestamp  is not recognized`. ADE hides the data 
 
 ---
 
-### Part B — Find the Root Cause
+## Part B — Find the Root Cause
 
 Estimated duration: 15 minutes
 
-1) In Snowflake, open **Monitoring → Query History**, search for the QueryId from Part A, and copy the full error message.
+1) In Snowflake, open <span class="ui-action">Monitoring → Query History</span>, search for the QueryId from Part A, and copy the full error message.
 
 2) Paste the error to ADA and let it explain. **Example prompt** (to `ada-developer`):
 
@@ -78,7 +75,7 @@ order by 1;
 
 > The query returned these rows: `<paste the query result>`. Look at the FLEETOPS sample file `fleet_vehicle.csv` and tell me what these vehicles have in common.
 
-#### ✅ Checkpoint B
+### Checkpoint B
 
 You can answer these questions:
 
@@ -103,11 +100,11 @@ You can answer these questions:
 
 ---
 
-### Part C — Decide and Fix
+## Part C — Decide and Fix
 
 Estimated duration: 15 minutes
 
-#### Decide
+### Decide
 
 There are several ways to handle this. Think about each before you read on:
 
@@ -128,7 +125,7 @@ There are several ways to handle this. Think about each before you read on:
 
 </details>
 
-#### Fix
+### Fix
 
 1) **Example prompt** (to `ada-developer`):
 
@@ -142,7 +139,7 @@ There are several ways to handle this. Think about each before you read on:
 
 > Push the FLEETOPS staging package, commit it with the message "Stage movement timestamps as text" and wait for the deployment. Then trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
 
-#### ✅ Checkpoint C
+### Checkpoint C
 
 The DAG succeeds. Check the row counts:
 
@@ -163,11 +160,12 @@ where movement_start_ts like '__.__.____%';
 
 The last row shows that the EU-format movements are there, as text.
 
-ℹ **Why did vehicles and shifts not load twice?** The DAG ran all three loads again, but Snowflake remembers which files a table has already loaded and skips them. Only `fleet_movement.csv` was loaded this time, because its earlier load failed.
+> **Why did vehicles and shifts not load twice?** The DAG ran all three loads again, but Snowflake remembers which files a table has already loaded and skips them. Only `fleet_movement.csv` was loaded this time, because its earlier load failed.
+{: .exercise-note}
 
 ---
 
-### Summary of Exercise 2
+## Summary of Exercise 2
 
 You have:
 
@@ -182,7 +180,7 @@ All three FLEETOPS files are now in staging. The timestamps of 223 movements are
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|

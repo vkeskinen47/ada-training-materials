@@ -1,24 +1,19 @@
-# Exercise 6 — Analysis and Decision
+---
+layout: exercise
+module_label: "Module 3: Exercise 6"
+title: "Analysis and Decision"
+duration: "1 hour"
+summary: "Apply the agreed decision model to publish data, interpret its limits, and write a borough-level recommendation memo for management."
+---
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
 
----
-
-## The task
-
-Estimated duration: 1 hour
-
-PackageDelivery's management asks one question: **should we offer taxi service with our idle vans — and where?**
-
-You have the data in the publish layer. In this exercise you turn it into a recommendation per borough, written as a decision memo. ADA writes the queries and drafts the memo. You decide what the numbers mean, and you are responsible for every claim in the memo.
-
-A good recommendation is not always *yes* or *no*. Where the data does not support a recommendation, the professional answer is to say so.
-
-**Result of this exercise:** a decision memo in `docs/decision_memo_fleetops.md`, committed to Git.
+> **Decision question:** Should PackageDelivery offer taxi service with its idle vans, and where? A sound recommendation may be “insufficient evidence” when the data cannot support a yes-or-no answer.
+{: .exercise-note}
 
 ---
 
-### The decision model
+## The decision model
 
 Management has agreed on this model. Every figure in your memo must follow it. It covers the five boroughs Manhattan, Brooklyn, Queens, Bronx and Staten Island.
 
@@ -33,7 +28,7 @@ The fleet terms *taxi-capable*, *idle* and *home borough* are the rules R3–R5 
 
 ---
 
-### Part A — Hypotheses First
+## Part A — Hypotheses First
 
 Estimated duration: 10 minutes
 
@@ -47,11 +42,12 @@ Before you query anything, write down your expectation for each borough — in a
 | Bronx | | |
 | Staten Island | | |
 
-ℹ A hypothesis written before the analysis protects you from reading into the numbers whatever you hoped to see. Where the result differs from your hypothesis, you have learned something — note what.
+> **Note:** A hypothesis written before the analysis protects you from reading into the numbers whatever you hoped to see. Where the result differs from your hypothesis, you have learned something — note what.
+{: .exercise-note}
 
 ---
 
-### Part B — Compute the Metrics
+## Part B — Compute the Metrics
 
 Estimated duration: 20 minutes
 
@@ -67,9 +63,10 @@ Estimated duration: 20 minutes
 
 3) Run the query in Snowflake. If it fails, paste the error to ADA.
 
-ℹ When you paste results to ADA, copy them from the Snowflake result grid. They paste as tab-separated text that ADA can read. A table copied from this page loses its column breaks.
+> **Important:** When you paste results to ADA, copy them from the Snowflake result grid. They paste as tab-separated text that ADA can read. A table copied from this page loses its column breaks.
+{: .exercise-note}
 
-#### ✅ Checkpoint B
+### Checkpoint B
 
 Compare your result with the reference. Small differences (±1 in the last digit) are rounding.
 
@@ -85,7 +82,7 @@ If a figure differs, paste your result to ADA, tell it which figure differs from
 
 ---
 
-### Part C — Interpret
+## Part C — Interpret
 
 Estimated duration: 15 minutes
 
@@ -122,7 +119,7 @@ What does the result mean for the model?
 
 ---
 
-### Part D — Write the Memo
+## Part D — Write the Memo
 
 Estimated duration: 15 minutes
 
@@ -157,7 +154,7 @@ Tell ADA what to change until every check passes.
 
 > Commit only `docs/decision_memo_fleetops.md` to Git with the message "FLEETOPS decision memo".
 
-#### ✅ Checkpoint D
+### Checkpoint D
 
 Your memo:
 
@@ -173,7 +170,7 @@ Compare the result with your hypotheses from Part A. Where were you wrong, and w
 
 ---
 
-### Summary of Exercise 6
+## Summary of Exercise 6
 
 You have:
 
@@ -196,7 +193,7 @@ ADA did the construction. The decisions, and the responsibility for them, stayed
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|

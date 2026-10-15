@@ -1,22 +1,19 @@
-# Exercise 3 — Design the Model with ADA
+---
+layout: exercise
+module_label: "Module 2: Exercise 3"
+title: "Design the Model with ADA"
+duration: "1 hour"
+summary: "Use ADA to propose a Data Vault design, review its business keys and relationships, and approve a design document before generation."
+---
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
 
----
-
-## The task
-
-Estimated duration: 1 hour
-
-The FLEETOPS data is in staging. Before ADA generates any Data Vault entities, you will design the model together: ADA proposes, you review, and you decide.
-
-This is the most important review in the course. In basic training, the model was given to you. Here, an agent proposes it — and an agent does not know your business or what already exists in your data warehouse unless you tell it. Every mistake you accept in the design is generated into hubs, links, satellites and loads in the next exercise.
-
-**Result of this exercise:** an approved design document in `design/`, committed to Git. No entities are generated or pushed yet.
+> **Why this review matters:** In basic training, the model was given to you. Here, an agent proposes it, but does not know your business or existing model unless you provide that context. Errors you accept now carry into the generated entities.
+{: .exercise-note}
 
 ---
 
-### Part A — Prepare
+## Part A — Prepare
 
 Estimated duration: 5 minutes
 
@@ -30,11 +27,12 @@ The Data Vault types (`HUB`, `LINK`, `SAT`, `SAT_C`, `S_SAT`) must point to `rdv
 
 > *PackageDelivery wants to know in which NYC areas its fleet has idle, passenger-capable capacity at times when taxi demand exists, and what that capacity would earn as taxi service.*
 
-ℹ A model designed without a question tends to copy the source tables. A model designed for a question captures the concepts the business needs. If ADA offers to start the design already now, decline.
+> **Note:** A model designed without a question tends to copy the source tables. A model designed for a question captures the concepts the business needs. If ADA offers to start the design already now, decline.
+{: .exercise-note}
 
 ---
 
-### Part B — Let ADA Propose a Model
+## Part B — Let ADA Propose a Model
 
 Estimated duration: 15 minutes
 
@@ -50,21 +48,23 @@ Estimated duration: 15 minutes
 
 Open the design document. VS Code shows the diagram when you open the Markdown preview (`Ctrl+Shift+V` / `Cmd+Shift+V`).
 
-ℹ ADA may ask you questions. Answer each in a full sentence that states your choice and the reason: *"A link, because a shift only connects a vehicle, a driver and a depot"*, not *"Link."*
+> **Note:** ADA may ask you questions. Answer each in a full sentence that states your choice and the reason: *"A link, because a shift only connects a vehicle, a driver and a depot"*, not *"Link."*
+{: .exercise-note}
 
 Business definitions — what counts as *idle*, which vehicles can carry passengers, how earnings are calculated — are **not** decided in the Raw Data Vault. PackageDelivery gives them as business rules later in the course. If ADA asks about them, tell it to record them as open questions for the publish layer.
 
 ---
 
-### Part C — Review the Design
+## Part C — Review the Design
 
 Estimated duration: 25 minutes
 
 Review the design in four short rounds. Each round follows the same pattern: **ask** ADA, **decide**, and let ADA **change** the document. Do not move on until the decision of the round is written into the document.
 
-ℹ **New to Data Vault?** You do not need to know every rule. Ask ADA to explain any term or choice in plain language, and judge the answer against the business question: *does this help PackageDelivery compare its fleet with taxi demand in the same zones?*
+> **New to Data Vault?** You do not need to know every rule. Ask ADA to explain any term or choice in plain language, and judge the answer against the business question: *does this help PackageDelivery compare its fleet with taxi demand in the same zones?*
+{: .exercise-note}
 
-#### Round 1 — Let ADA find its own problems (5 min)
+### Round 1 — Let ADA find its own problems (5 min)
 
 **Example prompt:**
 
@@ -74,9 +74,10 @@ Read the list. Choose the fixes you agree with and ask ADA to apply them, for ex
 
 > Apply fixes 1 and 3. Add the others to *Open Questions*.
 
-ℹ An agent reviewing its own work finds real problems, but not the ones caused by missing context. The next rounds check what matters most for this business question.
+> **Note:** An agent reviewing its own work finds real problems, but not the ones caused by missing context. The next rounds check what matters most for this business question.
+{: .exercise-note}
 
-#### Round 2 — Connect to the existing model (5 min)
+### Round 2 — Connect to the existing model (5 min)
 
 `fleet_movement.csv` and `fleet_shift.csv` contain NYC taxi zone IDs: `pickup_locationid`, `dropoff_locationid` and `depot_locationid`. Your data warehouse already has a hub for taxi zones from basic training: `rdv_<your_alias>.H_TAXI_ZONE`, with the business key `taxi_zone_key`.
 
@@ -95,7 +96,7 @@ ADA knows your existing model only if it reads it. Whether it does depends on wh
 
 </details>
 
-#### Round 3 — Hubs and links (8 min)
+### Round 3 — Hubs and links (8 min)
 
 **Example prompt:**
 
@@ -111,7 +112,7 @@ Decide, then **example prompt:**
 
 > Record my decisions in a *Design Decisions* section, each with a reason: [your decisions]. Update the tables and the diagram to match.
 
-#### Round 4 — Check against the data (7 min)
+### Round 4 — Check against the data (7 min)
 
 A design document records assumptions. Check a few against the staged data. Run in Snowflake:
 
@@ -129,11 +130,12 @@ from ADE_TRAINING_DEV_SAAS.STAGING_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 
 > I ran a data check on `STG_FLEETOPS_FLEET_MOVEMENT`. The results: [paste the result]. For each finding, tell me whether it affects the model. Add the findings to the design: under *Assumptions* if the decision is clear, under *Open Questions* if not.
 
-ℹ Pay attention to `dropoff_missing`. Think about what happens when a hub load receives a NULL business key. You will meet this again in the next exercise. Also remember from Exercise 2: the movement timestamps are **text** in staging, and some use the `DD.MM.YYYY` format.
+> **Note:** Pay attention to `dropoff_missing`. Think about what happens when a hub load receives a NULL business key. You will meet this again in the next exercise. The movement timestamps are **text** in staging, and some use the `DD.MM.YYYY` format.
+{: .exercise-note}
 
 ---
 
-### Part D — Approve the Design
+## Part D — Approve the Design
 
 Estimated duration: 10 minutes
 
@@ -149,7 +151,7 @@ Estimated duration: 10 minutes
 
 > Commit only the design document `design/dv_design_<name>.md` to Git with the message "Approved FLEETOPS Data Vault design".
 
-#### ✅ Checkpoint D
+### Checkpoint D
 
 All of these must be true in your design document:
 
@@ -166,7 +168,7 @@ And the document is committed to Git.
 
 ---
 
-### Summary of Exercise 3
+## Summary of Exercise 3
 
 You have:
 
@@ -179,7 +181,7 @@ The design is your specification for the next exercise, in which ADA generates t
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
