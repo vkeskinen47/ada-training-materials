@@ -1,26 +1,20 @@
 ---
 layout: exercise
+module_label: "Module 1: Exercise 1"
+title: "ADA Setup and New Source to Staging"
+duration: "2 hours 20 minutes"
+summary: "Install ADA, connect to ADE, bring the basic-training pipeline into your project, and add FLEETOPS to staging."
 ---
-
-# Exercise 1 — ADA Setup and New Source to Staging
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
 
 ---
 
-## The task
-
-Estimated duration: 2 hours 20 minutes
-
-In this exercise you install ADA, connect it to your ADE tenant, bring the basic-training pipeline into your project, and add the new source FLEETOPS to the staging layer. The story behind it is in *Business Case 1*.
-
----
-
-### Part A — Install ADA and Connect to ADE
+## Part A — Install ADA and Connect to ADE
 
 Estimated duration: 70 minutes
 
-#### Watch: Admin UI
+### Watch: Admin UI
 
 [Watch the Admin UI video](https://youtu.be/kbj3EmWxrwE)
 
@@ -32,7 +26,7 @@ In this training your trainer provides the API keys. In your own organisation, k
 | Allows your IP address in Access Rules | Trainer | Admin UI user |
 | Installs ADA | You | You |
 
-#### Install
+### Install
 
 1) Download the starter project to your local machine:
 https://www.agiledataengine.com/hubfs/Training/ada_starter_project.zip
@@ -97,7 +91,7 @@ git commit -m "Initial ADA project"
 > **Note:** From now on, ADA uses Git for you. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
 {: .exercise-note}
 
-#### Checkpoint A1
+### Checkpoint A1
 
 ```bash
 ada doctor
@@ -110,7 +104,7 @@ ADE environment reachable: <tenant ID>/<installation>/design
 ADE environment reachable: <tenant ID>/<installation>/dev
 ```
 
-#### Optional: connect your AI tool to ADE with MCP
+### Optional: connect your AI tool to ADE with MCP
 
 MCP (Model Context Protocol) lets the AI agent query ADE directly — for example, which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
 
@@ -131,7 +125,7 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 > Use the ADE MCP server to check that you can reach ADE, and tell me the name of my API key.
 
-#### Give ADA your alias
+### Give ADA your alias
 
 From now on, you work through ADA. Start ADA in your AI tool:
 
@@ -159,7 +153,7 @@ Many trainees share the same ADE tenant, so every schema and package needs your 
 > **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
 {: .exercise-note}
 
-#### Bring the basic-training pipeline into the project
+### Bring the basic-training pipeline into the project
 
 In a later exercise you will connect the fleet data to the `H_TAXI_ZONE` hub from basic training. ADA needs that hub as YAML in your project, and the hub needs data in Snowflake.
 
@@ -221,7 +215,7 @@ CALL ade_training_dev_saas.staging.load_files_to_blob ('<your_alias>', 2);
 
 > Trigger the DAG `TAXIDATA_<YOUR_ALIAS>` in dev and wait for it to finish.
 
-#### Checkpoint A2
+### Checkpoint A2
 
 - The DAG `TAXIDATA_<YOUR_ALIAS>` succeeds
 - `packages/traffic_dv_<your_alias>/` contains `h_taxi_zone.yaml`
@@ -235,7 +229,7 @@ join ADE_TRAINING_DEV_SAAS.RDV_<your_alias>.S_TAXI_ZONE_C s on h.dv_id = s.dv_id
 
 ---
 
-### Part B — Add the FLEETOPS Source
+## Part B — Add the FLEETOPS Source
 
 Estimated duration: 25 minutes
 
@@ -270,7 +264,7 @@ ADA creates the package `STG_FLEETOPS_<YOUR_ALIAS>` with three SOURCE entities, 
 > **Optional:** `DOUBLE` is a floating-point type. It is not ideal for money. If you want to practise, ask ADA to change `delivery_revenue_usd` to a DECIMAL type.
 {: .exercise-note}
 
-#### Checkpoint B
+### Checkpoint B
 
 **Example prompt:**
 
@@ -299,7 +293,7 @@ If you see your alias in every schema and in the package name, your alias config
 
 ---
 
-### Part C — Load the Files into Staging
+## Part C — Load the Files into Staging
 
 Estimated duration: 45 minutes
 
@@ -314,7 +308,7 @@ The production files are in the landing zone in one shared folder:
 
 `<snowflake_azure_stage>` is an environment variable. ADE replaces it with the DEV or PROD stage when it generates the load.
 
-#### Create a load schedule
+### Create a load schedule
 
 1) **Example prompt:**
 
@@ -325,7 +319,7 @@ The production files are in the landing zone in one shared folder:
 > **Note:** A schedule becomes a DAG in Workflow Orchestration. Using your own schedule means that running your fleet loads does not re-run your taxi loads from basic training.
 {: .exercise-note}
 
-#### Review and fix the generated loads
+### Review and fix the generated loads
 
 2) Open `stg_fleetops_fleet_movement.sql`. ADA generated the COPY INTO statement from the tenant's default load template:
 
@@ -365,13 +359,13 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Review:** check all three `.sql` files and the `schedulingName` in all three YAML files.
 
-#### Validate and push the staging package
+### Validate and push the staging package
 
 4) Review the local files, then validate and run a dry run. **Example prompt:**
 
 > Check all three FLEETOPS SQL sidecars and their matching STAGE YAML files. Confirm each COPY INTO path points to the matching single file, each file format has `skip_header=1`, and each load has the schedule `FLEETOPS_<YOUR_ALIAS>`. Then run `ada validate`, show me the plan, and run a push dry run. Do not push yet.
 
-#### Checkpoint C1
+### Checkpoint C1
 
 - Each local SQL sidecar points to its matching single file under `'<snowflake_azure_stage>/FLEETOPS/PACKAGE_DELIVERY/'` and has `skip_header=1`.
 - Each STAGE YAML has `schedulingName: FLEETOPS_<YOUR_ALIAS>`.
@@ -383,7 +377,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada push -p STG_FLEETOPS_<YOUR_ALIAS>`
 
-#### Deploy and run
+### Deploy and run
 
 6) Your new schedule lives in the shared `CONFIG_LOAD_SCHEDULES` package. It must be deployed before your package, just like in basic training.
 
@@ -404,7 +398,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada dag trigger --dag-id FLEETOPS_<YOUR_ALIAS> --env dev --wait`
 
-#### Checkpoint C2 — the DAG fails
+### Checkpoint C2 — the DAG fails
 
 **The DAG fails. This is expected.**
 
@@ -433,7 +427,7 @@ from ADE_TRAINING_DEV_SAAS.STAGING_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 
 ---
 
-### Summary of Exercise 1
+## Summary of Exercise 1
 
 You have:
 
@@ -447,7 +441,7 @@ Two of three files are in staging. The third, `fleet_movement.csv`, failed. It h
 
 ---
 
-### Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|

@@ -6,8 +6,8 @@ layout: default
     display: none;
   }
   .exercise-cover {
-    margin: 1.5rem auto 2.5rem;
-    max-width: 760px;
+    margin: 2rem auto 3rem;
+    max-width: 920px;
     text-align: center;
   }
   .exercise-cover__logo {
@@ -18,7 +18,7 @@ layout: default
     margin: 0 auto 0.5rem;
   }
   .exercise-cover__label {
-    margin: 0;
+    margin: 0 0 2.1rem;
     color: #24292f;
     font-size: 1.25rem;
     font-weight: 600;
@@ -26,12 +26,36 @@ layout: default
   .markdown-body hr.exercise-cover__rule {
     width: 80%;
     max-width: 600px;
-    margin: 2rem auto 2.25rem;
+    margin: 0 auto 2rem;
     height: 0;
     padding: 0;
     border: 0;
     border-top: 2px solid #111;
     background: transparent;
+  }
+  .exercise-cover__module {
+    margin: 0 0 1.5rem;
+    color: #24292f;
+    font-size: 3rem;
+    font-weight: 400;
+  }
+  .markdown-body h1.exercise-cover__title {
+    margin: 0 0 1.4rem;
+    padding: 0;
+    border: 0;
+    color: #24292f;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+  .exercise-cover__duration {
+    margin: 0 0 1rem;
+    color: #24292f;
+    font-size: 1.1rem;
+  }
+  .exercise-cover__summary {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 1.2rem;
   }
   .exercise-content .ui-action {
     color: #1683c3;
@@ -81,6 +105,15 @@ layout: default
     .exercise-cover__logo {
       width: 320px;
     }
+    .exercise-cover__module {
+      font-size: 2rem;
+    }
+    .markdown-body h1.exercise-cover__title {
+      font-size: 1.4rem;
+    }
+    .exercise-cover__summary {
+      font-size: 1rem;
+    }
     .markdown-body hr.exercise-cover__rule {
       width: 82%;
       margin: 1.5rem auto 1.75rem;
@@ -91,6 +124,10 @@ layout: default
   <img class="exercise-cover__logo" src="{{ '/assets/images/ADE-logo-black.png' | relative_url }}" alt="Agile Data Engine">
   <p class="exercise-cover__label">for Data Engineers</p>
   <hr class="exercise-cover__rule">
+  <p class="exercise-cover__module">{{ page.module_label }}</p>
+  <h1 class="exercise-cover__title">{{ page.title }}</h1>
+  <p class="exercise-cover__duration"><strong>Estimated duration: {{ page.duration }}</strong></p>
+  <p class="exercise-cover__summary">{{ page.summary }}</p>
 </header>
 <main class="exercise-content">
   {{ content }}
