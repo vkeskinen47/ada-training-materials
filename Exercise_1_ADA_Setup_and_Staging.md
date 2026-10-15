@@ -39,7 +39,8 @@ https://www.agiledataengine.com/hubfs/Training/ada_starter_project.zip
 
 2) Extract the ZIP file and open the `ada_starter_project` folder in VS Code. It contains a `README.md` and the FLEETOPS sample files in `source_data/fleetops/`.
 
-NOTE! Do not rename or move the sample files. ADA derives entity names from the file names.
+> **Important:** Do not rename or move the sample files. ADA derives entity names from the file names.
+{: .exercise-note}
 
 3) Open a terminal in VS Code and create and activate a virtual environment. The installer refuses to run without one.
 
@@ -63,7 +64,7 @@ Windows (PowerShell): `irm https://artifacts.saas.agiledataengine.com/install.ps
 | `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly |
 | Unreachable / network error | Your IP address is not allowed | Contact your trainer |
 
-6) When the installer prints `✓ ada-cli <version> installed`, scaffold the project:
+6) When the installer prints `ada-cli <version> installed`, scaffold the project:
 
 ```bash
 ada init                           # Claude Code users: ada init --tool claude
@@ -93,9 +94,10 @@ git add -A
 git commit -m "Initial ADA project"
 ```
 
-ℹ From now on, ADA uses Git for you. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
+> **Note:** From now on, ADA uses Git for you. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
+{: .exercise-note}
 
-#### ✅ Checkpoint A1
+#### Checkpoint A1
 
 ```bash
 ada doctor
@@ -104,8 +106,8 @@ ada doctor
 The output must end with both lines:
 
 ```
-✓ ADE environment reachable: <tenant ID>/<installation>/design
-✓ ADE environment reachable: <tenant ID>/<installation>/dev
+ADE environment reachable: <tenant ID>/<installation>/design
+ADE environment reachable: <tenant ID>/<installation>/dev
 ```
 
 #### Optional: connect your AI tool to ADE with MCP
@@ -122,7 +124,7 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 2) Connect:
 
-- **VS Code:** open `.vscode/mcp.json` and click **Start** above each server (`ade-mcp-design`, `ade-mcp-dev`). VS Code asks for the key ID and secret of each environment and stores them securely.
+- **VS Code:** open `.vscode/mcp.json` and click <span class="ui-action">Start</span> above each server (`ade-mcp-design`, `ade-mcp-dev`). VS Code asks for the key ID and secret of each environment and stores them securely.
 - **Claude Code:** set the environment variables `ADE_DESIGN_API_KEY_ID`, `ADE_DESIGN_API_KEY_SECRET`, `ADE_DEV_API_KEY_ID` and `ADE_DEV_API_KEY_SECRET` before you start `claude`.
 
 3) Test it. **Example prompt:**
@@ -133,7 +135,7 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 From now on, you work through ADA. Start ADA in your AI tool:
 
-- **GitHub Copilot in VS Code:** open Copilot Chat in **Agent** mode and select the `ada-developer` agent
+- **GitHub Copilot in VS Code:** open Copilot Chat in <span class="ui-action">Agent</span> mode and select the `ada-developer` agent
 - **Claude Code:** start `claude` in the project folder
 
 Many trainees share the same ADE tenant, so every schema and package needs your alias. Set it for all entity types at once, so that nothing you create later lands in a shared default schema.
@@ -151,9 +153,11 @@ Many trainees share the same ADE tenant, so every schema and package needs your 
 
 **Review:** open `config/pipeline.yaml` and check the values yourself.
 
-ℹ Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
+> **Note:** Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
+{: .exercise-note}
 
-ℹ AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
+> **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
+{: .exercise-note}
 
 #### Bring the basic-training pipeline into the project
 
@@ -161,7 +165,8 @@ In a later exercise you will connect the fleet data to the `H_TAXI_ZONE` hub fro
 
 The starter project contains a copy of the complete basic-training pipeline in `model_packages/`: `TAXIDATA_STAGING_ZZALIAS`, `TRAFFIC_DV_ZZALIAS` and `TRAFFIC_PUBLISH_ZZALIAS`. Wherever an alias belongs, the copy has the placeholder `zzalias` (`ZZALIAS` in uppercase names). You will turn the copy into your own packages, deploy them and load the taxi data.
 
-ℹ The copy contains no entity IDs, so pushing it can only create new entities. It cannot change anyone else's packages. Use an alias you have not used in this tenant before. If you did the basic training with the same alias, the plan in step 2 shows `~` (modify) lines instead of only `+` lines.
+> **Note:** The copy contains no entity IDs, so pushing it can only create new entities. It cannot change anyone else's packages. Use an alias you have not used in this tenant before. If you did the basic training with the same alias, the plan in step 2 shows `~` (modify) lines instead of only `+` lines.
+{: .exercise-note}
 
 1) Create a schedule for the taxi pipeline. **Example prompt:**
 
@@ -171,7 +176,8 @@ The starter project contains a copy of the complete basic-training pipeline in `
 
 > Copy the three packages in `model_packages/` into `packages/`. In the copies, replace `zzalias` with `<your_alias>` and `ZZALIAS` with `<YOUR_ALIAS>` everywhere — in folder names, file contents and SQL files. Do not change anything in `model_packages/`.
 
-ℹ The placeholder also renames the schedule to `TAXIDATA_<YOUR_ALIAS>`. Until you have replaced it and created that schedule, `ada validate` reports `TAXIDATA_ZZALIAS` as an unknown schedule.
+> **Note:** The placeholder also renames the schedule to `TAXIDATA_<YOUR_ALIAS>`. Until you have replaced it and created that schedule, `ada validate` reports `TAXIDATA_ZZALIAS` as an unknown schedule.
+{: .exercise-note}
 
 **Review:** ask ADA to check the result:
 
@@ -181,9 +187,11 @@ The starter project contains a copy of the complete basic-training pipeline in `
 - Validation passes
 - The plan shows **only `+` (create) lines**: 19 entities in three packages, and `0 to modify, 0 to delete`
 
-ℹ The plan has no satellite current views (`S_..._C`). ADE creates them automatically for each satellite.
+> **Note:** The plan has no satellite current views (`S_..._C`). ADE creates them automatically for each satellite.
+{: .exercise-note}
 
-ℹ **The standard routine.** Whenever you change entities, take them to ADE in this order. ADA knows the routine; your job is to read each result before the next step.
+> **The standard routine.** Whenever you change entities, take them to ADE in this order. ADA knows the routine; your job is to read each result before the next step.
+{: .exercise-note}
 
 | Step | Command | What you check |
 |---|---|---|
@@ -206,13 +214,14 @@ CALL ade_training_dev_saas.staging.load_files_to_blob ('<your_alias>', 1);
 CALL ade_training_dev_saas.staging.load_files_to_blob ('<your_alias>', 2);
 ```
 
-NOTE! The alias is case-sensitive.
+> **Important:** The alias is case-sensitive.
+{: .exercise-note}
 
-5) Open DEV Workflow Orchestration, find the DAG `TAXIDATA_<YOUR_ALIAS>`, switch it **on** with the toggle, and check in the Graph view that your loads are there. Then trigger it. **Example prompt:**
+5) Open DEV Workflow Orchestration, find the DAG `TAXIDATA_<YOUR_ALIAS>`, switch it <span class="ui-action">on</span> with the toggle, and check in the <span class="ui-action">Graph view</span> that your loads are there. Then trigger it. **Example prompt:**
 
 > Trigger the DAG `TAXIDATA_<YOUR_ALIAS>` in dev and wait for it to finish.
 
-#### ✅ Checkpoint A2
+#### Checkpoint A2
 
 - The DAG `TAXIDATA_<YOUR_ALIAS>` succeeds
 - `packages/traffic_dv_<your_alias>/` contains `h_taxi_zone.yaml`
@@ -232,7 +241,8 @@ Estimated duration: 25 minutes
 
 The `FLEETOPS` source system already exists in ADE (`CONFIG_SYSTEMS`). Your task is to describe the source files to ADA so that it can create the SOURCE and STAGE entities.
 
-ℹ **Why sample files?** `source_data/fleetops/` contains a **sample extract** — the first week of January — not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
+> **Why sample files?** `source_data/fleetops/` contains a **sample extract** — the first week of January — not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
+{: .exercise-note}
 
 1) **Example prompt:**
 
@@ -257,9 +267,10 @@ ADA creates the package `STG_FLEETOPS_<YOUR_ALIAS>` with three SOURCE entities, 
 | `distance`, `delivery_revenue_usd` | DOUBLE |
 | `created`, `updated` | DATE |
 
-ℹ DOUBLE is a floating-point type. It is not ideal for money. If you want to practise, ask ADA to change `delivery_revenue_usd` to a DECIMAL type. This step is optional.
+> **Optional:** `DOUBLE` is a floating-point type. It is not ideal for money. If you want to practise, ask ADA to change `delivery_revenue_usd` to a DECIMAL type.
+{: .exercise-note}
 
-#### ✅ Checkpoint B
+#### Checkpoint B
 
 **Example prompt:**
 
@@ -269,7 +280,7 @@ ADA creates the package `STG_FLEETOPS_<YOUR_ALIAS>` with three SOURCE entities, 
 
 Both of these must be true:
 
-- Validation reports `✓ All 6 files valid`
+- Validation reports `All 6 files valid`
 - The plan shows **exactly 6 entities to create and nothing else**:
 
 ```
@@ -311,7 +322,8 @@ The production files are in the landing zone in one shared folder:
 
 **Under the hood:** `ada config schedule add --name FLEETOPS_<YOUR_ALIAS> --description "#fleetops #<your_alias>"`
 
-ℹ A schedule becomes a DAG in Workflow Orchestration. Using your own schedule means that running your fleet loads does not re-run your taxi loads from basic training.
+> **Note:** A schedule becomes a DAG in Workflow Orchestration. Using your own schedule means that running your fleet loads does not re-run your taxi loads from basic training.
+{: .exercise-note}
 
 #### Review and fix the generated loads
 
@@ -348,7 +360,8 @@ The default template fits the basic-training folder layout, not this source. Bef
 > - change `skip_header` to 1
 > - set the load schedule to `FLEETOPS_<YOUR_ALIAS>`
 
-ℹ Keep `<snowflake_azure_stage>` and `<source_system_name>` as variables. Hard-coding the DEV stage would break the load in PROD.
+> **Important:** Keep `<snowflake_azure_stage>` and `<source_system_name>` as variables. Hard-coding the DEV stage would break the load in PROD.
+{: .exercise-note}
 
 **Review:** check all three `.sql` files and the `schedulingName` in all three YAML files.
 
@@ -358,7 +371,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 > Check all three FLEETOPS SQL sidecars and their matching STAGE YAML files. Confirm each COPY INTO path points to the matching single file, each file format has `skip_header=1`, and each load has the schedule `FLEETOPS_<YOUR_ALIAS>`. Then run `ada validate`, show me the plan, and run a push dry run. Do not push yet.
 
-#### ✅ Checkpoint C1
+#### Checkpoint C1
 
 - Each local SQL sidecar points to its matching single file under `'<snowflake_azure_stage>/FLEETOPS/PACKAGE_DELIVERY/'` and has `skip_header=1`.
 - Each STAGE YAML has `schedulingName: FLEETOPS_<YOUR_ALIAS>`.
@@ -380,9 +393,10 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada deploy commit -p CONFIG_LOAD_SCHEDULES -m "..." --wait`, then the same for `STG_FLEETOPS_<YOUR_ALIAS>`
 
-ℹ `ada deploy commit --wait` may print `✗ Deployment RUNNING` even though every package below it shows `SUCCESS`. This only means the overall deployment had not closed when ADA stopped waiting. Trust the package lines.
+> **Note:** `ada deploy commit --wait` may print `Deployment RUNNING` even though every package below it shows `SUCCESS`. This only means the overall deployment had not closed when ADA stopped waiting. Trust the package lines.
+{: .exercise-note}
 
-7) Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`. Switch it **on** with the toggle, then open the Graph view and check that all three staging loads are there. A DAG that is switched off does not run.
+7) Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`. Switch it <span class="ui-action">on</span> with the toggle, then open the <span class="ui-action">Graph view</span> and check that all three staging loads are there. A DAG that is switched off does not run.
 
 8) **Example prompt:**
 
@@ -390,7 +404,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada dag trigger --dag-id FLEETOPS_<YOUR_ALIAS> --env dev --wait`
 
-#### ✅ Checkpoint C2 — the DAG fails
+#### Checkpoint C2 — the DAG fails
 
 **The DAG fails. This is expected.**
 
@@ -398,9 +412,9 @@ Open DEV Workflow Orchestration and find the DAG `FLEETOPS_<YOUR_ALIAS>`:
 
 | Load | Expected state |
 |---|---|
-| `..._fleet_vehicle_...` | ✅ Success |
-| `..._fleet_shift_...` | ✅ Success |
-| `..._fleet_movement_...` | ❌ Failed |
+| `..._fleet_vehicle_...` | Success |
+| `..._fleet_shift_...` | Success |
+| `..._fleet_movement_...` | Failed |
 
 Check the row counts in Snowflake:
 

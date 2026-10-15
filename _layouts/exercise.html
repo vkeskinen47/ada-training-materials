@@ -2,6 +2,9 @@
 layout: default
 ---
 <style>
+  .markdown-body > h1:first-child {
+    display: none;
+  }
   .exercise-cover {
     margin: 1.5rem auto 2.5rem;
     max-width: 760px;
@@ -9,7 +12,7 @@ layout: default
   }
   .exercise-cover__logo {
     display: block;
-    width: 280px;
+    width: 400px;
     max-width: 100%;
     height: auto;
     margin: 0 auto 0.5rem;
@@ -27,12 +30,53 @@ layout: default
     border: 0;
     border-top: 2px solid #24292f;
   }
+  .exercise-content .ui-action {
+    color: #1683c3;
+    font-weight: 700;
+  }
+  .exercise-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+  }
+  .exercise-content th,
+  .exercise-content td {
+    border: 1px solid #d1d5da;
+    padding: 0.65rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .exercise-content th {
+    color: #24292f;
+    font-weight: 700;
+  }
+  .exercise-content blockquote.exercise-note {
+    position: relative;
+    margin: 1.5rem 0;
+    padding: 0.85rem 1rem 0.85rem 2.15rem;
+    border: 2px solid #e31875;
+    border-left: 2px solid #e31875;
+    background: #fff;
+    color: #24292f;
+  }
+  .exercise-content blockquote.exercise-note::before {
+    position: absolute;
+    top: 0.72rem;
+    left: 0.75rem;
+    color: #1683c3;
+    content: "i";
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .exercise-content blockquote.exercise-note p:last-child {
+    margin-bottom: 0;
+  }
   @media (max-width: 600px) {
     .exercise-cover {
       margin: 1rem auto 1.75rem;
     }
     .exercise-cover__logo {
-      width: 220px;
+      width: 320px;
     }
     .exercise-cover__rule {
       width: 82%;
@@ -45,6 +89,6 @@ layout: default
   <p class="exercise-cover__label">for Data Engineers</p>
   <hr class="exercise-cover__rule">
 </header>
-<main>
+<main class="exercise-content">
   {{ content }}
 </main>
