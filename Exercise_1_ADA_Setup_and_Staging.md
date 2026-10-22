@@ -316,7 +316,7 @@ The production files are in the landing zone in one shared folder:
 
 **Under the hood:** `ada config schedule add --name FLEETOPS_<YOUR_ALIAS> --description "#fleetops #<your_alias>"`
 
-> **Note:** A schedule becomes a DAG in Workflow Orchestration. Using your own schedule means that running your fleet loads does not re-run your taxi loads from basic training.
+> **Note:** A schedule becomes a DAG in <span class="ui-action">Workflow Orchestration</span>. Using your own schedule means that running your fleet loads does not re-run your taxi loads from basic training.
 {: .exercise-note}
 
 ### Review and fix the generated loads
@@ -453,6 +453,6 @@ Two of three files are in staging. The third, `fleet_movement.csv`, failed. It h
 | `ada doctor` does not list the dev environment | Run `ada config credentials --env dev` again |
 | The plan shows names without your alias | Check `schema_overrides` and `package_name_postfix_override` in `config/pipeline.yaml` |
 | PROD deployment fails: schedule not recognized | Deploy `CONFIG_LOAD_SCHEDULES` to PROD first |
-| The DAG stays `QUEUED` and never runs | The DAG is switched off. Switch it on in Workflow Orchestration |
+| The DAG stays `QUEUED` and never runs | The DAG is switched off. Switch it on in <span class="ui-action">Workflow Orchestration</span> |
 | The plan for your new taxi packages shows `~ modified` lines | A package with the same name already exists in ADE. Check that every name contains your own alias |
 | `ada validate` reports `TAXIDATA_ZZALIAS` as unknown | The placeholder was not replaced everywhere, or the schedule `TAXIDATA_<YOUR_ALIAS>` was not created yet |
