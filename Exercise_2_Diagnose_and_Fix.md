@@ -185,7 +185,7 @@ All three FLEETOPS files are now in staging. The timestamps of 223 movements are
 | Symptom | Likely cause |
 |---|---|
 | `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
-| `ada-ops` cannot reach ADE through MCP | The MCP servers are not running. In VS Code, open `.vscode/mcp.json` and click <span class="ui-action">Start</span> for each server. Or ask ADA to use `ada workflow diagnose` instead |
+| `ada-ops` cannot reach ADE through MCP | The MCP servers are not running. In VS Code, open `.vscode/mcp.json` and start them. Or ask ADA to use `ada workflow diagnose` instead |
 | The stage query in Part B fails with a permission error | Ask your trainer. You can skip the query and continue from Checkpoint B |
 | The plan shows changes in other packages | Something else changed locally. Ask ADA to show the diff before you push |
 | The DAG fails again with `Timestamp ... is not recognized` | The type change did not reach DEV. Check that the deployment succeeded, and that the plan showed the change |

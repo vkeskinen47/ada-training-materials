@@ -46,7 +46,7 @@ Estimated duration: 15 minutes
 
 **Under the hood:** ADA uses its Data Vault analysis skill. It reads the staging YAML and `config/pipeline.yaml`, and writes `design/dv_design_<name>.md` with a Mermaid diagram.
 
-Open the design document. In VS Code, open the <span class="ui-action">Markdown preview</span> (`Ctrl+Shift+V` / `Cmd+Shift+V`) to see the diagram.
+Open the design document. VS Code shows the diagram when you open the Markdown preview (`Ctrl+Shift+V` / `Cmd+Shift+V`).
 
 > **Note:** ADA may ask you questions. Answer each in a full sentence that states your choice and the reason: *"A link, because a shift only connects a vehicle, a driver and a depot"*, not *"Link."*
 {: .exercise-note}
