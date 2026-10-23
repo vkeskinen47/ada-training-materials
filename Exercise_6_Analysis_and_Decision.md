@@ -193,4 +193,4 @@ ADA did the construction. The decisions, and the responsibility for them, stayed
 
 ---
 
-Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.
+Something not working? Ask ADA to help you debug it first, then check the [Training Q&A](Training_QA_ADA_Self_Study.md) before you ask your trainer.
