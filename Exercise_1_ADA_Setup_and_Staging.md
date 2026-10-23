@@ -441,18 +441,4 @@ Two of three files are in staging. The third, `fleet_movement.csv`, failed. It h
 
 ---
 
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| Installer: `no active virtual environment detected` | Run step 3 of Part A first |
-| `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` in the project folder. Every new terminal needs it |
-| Installer: `requires Python >=3.10` | Recreate the virtual environment with a newer Python |
-| `ada staging generate`: `ADE schema not found` | `ada config pull` was not run (Part A, step 8) |
-| `ada push` refuses because of uncommitted changes | Commit your changes first, or ask ADA to do it |
-| `ada doctor` does not list the dev environment | Run `ada config credentials --env dev` again |
-| The plan shows names without your alias | Check `schema_overrides` and `package_name_postfix_override` in `config/pipeline.yaml` |
-| PROD deployment fails: schedule not recognized | Deploy `CONFIG_LOAD_SCHEDULES` to PROD first |
-| The DAG stays `QUEUED` and never runs | The DAG is switched off. Switch it on in Workflow Orchestration |
-| The plan for your new taxi packages shows `~ modified` lines | A package with the same name already exists in ADE. Check that every name contains your own alias |
-| `ada validate` reports `TAXIDATA_ZZALIAS` as unknown | The placeholder was not replaced everywhere, or the schedule `TAXIDATA_<YOUR_ALIAS>` was not created yet |
+Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.

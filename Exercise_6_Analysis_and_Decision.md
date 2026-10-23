@@ -193,12 +193,4 @@ ADA did the construction. The decisions, and the responsibility for them, stayed
 
 ---
 
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
-| Taxi revenue per hour is far too high for one borough | Trips of 0 minutes or with negative duration are included. Check the 1–120 minute filter (D2) |
-| The query shows a borough called `Unknown` or `EWR` | These come from the taxi zones 264, 265 and Newark Airport. They are not PackageDelivery boroughs — leave them out of the recommendation |
-| Movements per borough differ from the reference | The movements are counted by home borough, not by the borough of the pickup zone (D5) |
-| The memo contains a figure you cannot find in your results | Ask ADA where it comes from. If there is no source, remove it |
+Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.

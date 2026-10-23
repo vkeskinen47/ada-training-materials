@@ -212,13 +212,4 @@ The fleet data and the taxi data now meet in `H_TAXI_ZONE`. Next, you will turn 
 
 ---
 
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
-| The plan shows `+` for a zone or location hub | ADA did not reuse `H_TAXI_ZONE`. Check the design document, and point ADA to `packages/traffic_dv_<your_alias>/h_taxi_zone.yaml` |
-| The plan does not show `~ H_TAXI_ZONE` | ADA created the zone loads somewhere else, or not at all. Ask it to add them to the existing entity |
-| `ada push` fails with an unknown reference | The packages reference each other. Push them in one batch |
-| `H_TAXI_ZONE` does not exist in Snowflake | Your basic-training model is not deployed. Go back to Exercise 1, Part A |
-| The DAG succeeds but the new tables are empty | The staging data was loaded before the new loads existed. Ask ADA to check the run IDs of the FLEETOPS staging entities |
+Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.

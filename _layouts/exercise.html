@@ -126,7 +126,7 @@ layout: default
   <hr class="exercise-cover__rule">
   <p class="exercise-cover__module">{{ page.module_label }}</p>
   <h1 class="exercise-cover__title">{{ page.title }}</h1>
-  <p class="exercise-cover__duration"><strong>Estimated duration: {{ page.duration }}</strong></p>
+  {% if page.duration %}<p class="exercise-cover__duration"><strong>Estimated duration: {{ page.duration }}</strong></p>{% endif %}
   <p class="exercise-cover__summary">{{ page.summary }}</p>
 </header>
 <main class="exercise-content">

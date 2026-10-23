@@ -210,12 +210,4 @@ You now have everything needed to answer PackageDelivery's question. In the next
 
 ---
 
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
-| The design creates a new zone dimension | Point ADA to `packages/traffic_publish_<your_alias>/d_taxi_zone.yaml` |
-| The plan shows changes to `F_TRIP`, or to `D_TAXI_ZONE` although your design did not decide so | ADA modified the existing taxi entities. Ask it to revert them and only reference them |
-| The publish tables are empty after the DAG | The publish loads did not run in this DAG. Ask ADA to list the loads of `FLEETOPS_<YOUR_ALIAS>` (`ada workflow describe`), or check the <span class="ui-action">Graph view</span> |
-| Fleet movements disappear when joined to `D_TAXI_ZONE` | Some zone keys are not in the dimension, for example an unknown zone from Exercise 4. Decide whether they should be, and record it in the design |
+Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.

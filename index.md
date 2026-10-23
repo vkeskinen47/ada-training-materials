@@ -8,3 +8,5 @@ Exercises:
 4. [Generate and Load the Raw Data Vault](Exercise_4_Raw_Data_Vault.md)
 5. [Publish Layer and Business Rules](Exercise_5_Publish_and_Business_Rules.md)
 6. [Analysis and Decision](Exercise_6_Analysis_and_Decision.md)
+
+When something does not work, see the [Training Q&A](Training_QA.md).

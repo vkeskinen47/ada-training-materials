@@ -181,13 +181,4 @@ The design is your specification for the next exercise, in which ADA generates t
 
 ---
 
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---|---|
-| `ada: command not found` | The virtual environment is not active in this terminal. Run `source .venv/bin/activate` |
-| ADA creates a design already in Part A | Ask ADA to delete the design document, and start Part B with the business question |
-| ADA generates entity YAML files | You did not ask for a design only. Ask ADA to delete the generated files and keep the design document |
-| The design names do not contain your alias | The Data Vault overrides are missing from `config/pipeline.yaml` (Exercise 1, *Give ADA your alias*) |
-| The diagram does not render | Ask ADA to check the Mermaid syntax in the design document |
-| ADA keeps proposing a new zone hub | Point it to the file `packages/traffic_dv_<your_alias>/h_taxi_zone.yaml` explicitly |
+Something not working? Check the [Training Q&A](Training_QA.md) before you ask your trainer.
