@@ -212,4 +212,4 @@ The fleet data and the taxi data now meet in `H_TAXI_ZONE`. Next, you will turn 
 
 ---
 
-Something not working? Ask ADA to help you debug it first, then check the [Training Q&A](Training_QA_ADA_Self_Study.md) before you ask your trainer.
+Something not working? Ask ADA to help you debug it first, then ask your trainer.

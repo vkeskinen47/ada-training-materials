@@ -181,4 +181,4 @@ The design is your specification for the next exercise, in which ADA generates t
 
 ---
 
-Something not working? Ask ADA to help you debug it first, then check the [Training Q&A](Training_QA_ADA_Self_Study.md) before you ask your trainer.
+Something not working? Ask ADA to help you debug it first, then ask your trainer.
