@@ -161,6 +161,10 @@ The MCP servers are not running. In VS Code, open `.vscode/mcp.json` and start t
 
 Ask your trainer. You can skip the query and continue from the next checkpoint.
 
+**3.10 `ada deploy commit` creates a commit, but nothing is deployed**
+
+`allow_automatic_deployment: true` is missing in `config/pipeline.yaml`. Add it, as in Exercise 1. For a commit you have already made, ask ADA to promote it to dev and start the deployment (`ada deploy promote --to DEV`, then `ada deploy start --to DEV --wait`).
+
 ---
 
 ## Data Vault

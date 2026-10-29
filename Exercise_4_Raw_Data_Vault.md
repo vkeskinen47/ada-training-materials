@@ -176,11 +176,11 @@ Run the query in Snowflake. Every `row_count` should equal its `expected_count`.
 select
   count(*)                                       as row_count,
   269                                            as expected_count,
-  count_if(try_to_number(taxi_zone_key) is null) as unknown_zone_rows
+  count_if(taxi_zone_key = '-1') as unknown_zone_rows
 from ADE_TRAINING_DEV_SAAS.RDV_<your_alias>.H_TAXI_ZONE;
 ```
 
-The FLEETOPS data uses the same NYC zone IDs as the taxi data. Three new loads write into the hub, but no new real zone should appear. `unknown_zone_rows` counts keys that are not zone numbers, such as `'-1'`.
+The FLEETOPS data uses the same NYC zone IDs as the taxi data. Three new loads write into the hub, but no new real zone should appear. `unknown_zone_rows` counts rows with the key `'-1'`, ADE's replacement for a missing business key.
 
 ### Checkpoint D
 

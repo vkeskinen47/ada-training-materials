@@ -80,7 +80,15 @@ This also registers `dev` as a runtime environment in `config/pipeline.yaml`.
 ada config pull
 ```
 
-9) Put the project under version control. `ada push` refuses to run without Git.
+9) Let ADE deploy a commit to DEV by itself. Open `config/pipeline.yaml` and add this line at the end of the file:
+
+```yaml
+allow_automatic_deployment: true
+```
+
+Without it, `ada deploy commit` only creates the commit, and you must promote and deploy it yourself.
+
+10) Put the project under version control. `ada push` refuses to run without Git.
 
 ```bash
 git init
