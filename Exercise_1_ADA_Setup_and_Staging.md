@@ -80,15 +80,7 @@ This also registers `dev` as a runtime environment in `config/pipeline.yaml`.
 ada config pull
 ```
 
-9) Let ADE deploy a commit to DEV by itself. Open `config/pipeline.yaml` and add this line at the end of the file:
-
-```yaml
-allow_automatic_deployment: true
-```
-
-Without it, `ada deploy commit` only creates the commit, and you must promote and deploy it yourself.
-
-10) Put the project under version control. `ada push` refuses to run without Git.
+9) Optional: put the project under version control. `ada push` works without Git, but with Git ADA saves a commit for every push and pull, so you can revert a change. Later exercises also ask ADA to commit design documents to Git. If Git is not installed, skip this step and the Git commit prompts later.
 
 ```bash
 git init
@@ -96,7 +88,7 @@ git add -A
 git commit -m "Initial ADA project"
 ```
 
-> **Note:** From now on, ADA uses Git for you. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
+> **Note:** If you use Git, ADA uses it for you from now on. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
 {: .exercise-note}
 
 ### Checkpoint A1
@@ -201,13 +193,13 @@ The starter project contains a copy of the complete basic-training pipeline in `
 | 2. Plan | `ada plan` | Only the changes you expect |
 | 3. Dry run | `ada push --dry-run` | ADE accepts the change |
 | 4. Push | `ada push` | The upserted count matches the plan |
-| 5. Deploy | `ada deploy commit --wait` | Every package shows `SUCCESS` |
+| 5. Deploy | `ada deploy commit`, `ada deploy promote --to DEV`, `ada deploy start --to DEV --wait` | Every package shows `SUCCESS` |
 
 3) Push and deploy. **Example prompt:**
 
-> Push my three taxi packages to ADE in one push. Then commit `CONFIG_LOAD_SCHEDULES` and wait for the deployment, and then commit my three taxi packages in the order staging, DV, publish and wait for each deployment.
+> Push my three taxi packages to ADE in one push. Then commit `CONFIG_LOAD_SCHEDULES`, promote it to DEV, deploy it and wait for the deployment. Then do the same for my three taxi packages in the order staging, DV, publish, one deployment at a time.
 
-**Under the hood:** `ada push -p TAXIDATA_STAGING_<YOUR_ALIAS> -p TRAFFIC_DV_<YOUR_ALIAS> -p TRAFFIC_PUBLISH_<YOUR_ALIAS>`, then `ada deploy commit ... --wait` for each package
+**Under the hood:** `ada push -p TAXIDATA_STAGING_<YOUR_ALIAS> -p TRAFFIC_DV_<YOUR_ALIAS> -p TRAFFIC_PUBLISH_<YOUR_ALIAS>`, then for each package `ada deploy commit -p <PACKAGE> -m "..."`, `ada deploy promote --to DEV -p <PACKAGE>` and `ada deploy start --to DEV --wait`
 
 4) Load the taxi files into the landing zone. Run in Snowflake, as in basic training:
 
@@ -391,11 +383,11 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Example prompt:**
 
-> Commit `CONFIG_LOAD_SCHEDULES` with the message "Add `FLEETOPS_<YOUR_ALIAS>` schedule" and wait for the deployment. Then commit my FLEETOPS staging package and wait for that deployment too.
+> Commit `CONFIG_LOAD_SCHEDULES` with the message "Add `FLEETOPS_<YOUR_ALIAS>` schedule", promote it to DEV, deploy it and wait for the deployment. Then do the same for my FLEETOPS staging package.
 
-**Under the hood:** `ada deploy commit -p CONFIG_LOAD_SCHEDULES -m "..." --wait`, then the same for `STG_FLEETOPS_<YOUR_ALIAS>`
+**Under the hood:** `ada deploy commit -p CONFIG_LOAD_SCHEDULES -m "..."`, `ada deploy promote --to DEV -p CONFIG_LOAD_SCHEDULES`, `ada deploy start --to DEV --wait`, then the same for `STG_FLEETOPS_<YOUR_ALIAS>`
 
-> **Note:** `ada deploy commit --wait` may print `Deployment RUNNING` even though every package below it shows `SUCCESS`. This only means the overall deployment had not closed when ADA stopped waiting. Trust the package lines.
+> **Note:** `ada deploy start --wait` may print `Deployment RUNNING` even though every package below it shows `SUCCESS`. This only means the overall deployment had not closed when ADA stopped waiting. Trust the package lines.
 {: .exercise-note}
 
 7) Open DEV <span class="ui-action">Workflow Orchestration</span> and find the DAG `FLEETOPS_<YOUR_ALIAS>`. Switch it <span class="ui-action">on</span> with the toggle, then open the <span class="ui-action">Graph view</span> and check that all three staging loads are there. A DAG that is switched off does not run.
@@ -440,7 +432,7 @@ from ADE_TRAINING_DEV_SAAS.STAGING_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 You have:
 
 - installed ADA with the official installer and connected it to the design and dev environments
-- brought your basic-training work into a Git repository as YAML
+- brought your basic-training work into the project as YAML
 - described a new source to ADA and reviewed the entities it generated
 - found and fixed three problems in a generated load before they reached ADE
 - deployed and run a pipeline without opening Designer

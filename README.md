@@ -30,7 +30,7 @@ ADA does the construction: it writes the YAML, runs the `ada` commands and talks
 ## Prerequisites
 
 - *ADE for Data Engineers* (basic training) completed
-- Python 3.10 or newer, Git and VS Code (or another supported AI tool) installed
+- Python 3.10 or newer and VS Code (or another supported AI tool) installed. Git is optional but recommended
 - An AI coding assistant subscription, for example GitHub Copilot or Claude Code
 - API keys and network access to the training environment, provided by the trainer
 

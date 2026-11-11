@@ -167,7 +167,7 @@ Ask your trainer. You can skip the query and continue from the next checkpoint.
 
 **3.10 `ada deploy commit` creates a commit, but nothing is deployed**
 
-`allow_automatic_deployment: true` is missing in `config/pipeline.yaml`. Add it, as in Exercise 1. For a commit you have already made, ask ADA to promote it to dev and start the deployment (`ada deploy promote --to DEV`, then `ada deploy start --to DEV --wait`).
+A commit alone does not deploy anything. After the commit, promote it to dev and start the deployment: ask ADA to do it, or run `ada deploy promote --to DEV`, then `ada deploy start --to DEV --wait`.
 
 **3.11 The Load Training Data job run fails, or the DAG finds no files**
 
