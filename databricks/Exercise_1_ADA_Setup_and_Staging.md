@@ -210,12 +210,12 @@ The starter project contains a copy of the complete basic-training pipeline in `
 
 **Under the hood:** `ada push -p TAXIDATA_STAGING_<YOUR_ALIAS> -p TRAFFIC_DV_<YOUR_ALIAS> -p TRAFFIC_PUBLISH_<YOUR_ALIAS>`, then `ada deploy commit ... --wait` for each package
 
-4) Load the taxi files into the landing zone, as in basic training. The taxi loads read their files from a folder named after your alias, for example `<unity_catalog_raw>/TAXIDATA/staging_<your_alias>/RATECODE_DESCRIPTION/`. The **Load Training Data** notebook in your Databricks workspace copies the files there. It loads the taxi data only: the FLEETOPS files are already in the landing zone (Part C):
+4) Load the taxi files into the landing zone, as in basic training. The taxi loads read their files from a folder named after your alias, for example `<unity_catalog_raw>/TAXIDATA/staging_<your_alias>/RATECODE_DESCRIPTION/`. The **Load Training Data** job in Databricks copies the files there. It loads the taxi data only: the FLEETOPS files are already in the landing zone (Part C):
 
-   - Open the [Load Training Data notebook](https://adb-1302321888178973.13.azuredatabricks.net/editor/notebooks/4370564077476515?o=1302321888178973) in your Databricks workspace (it is also under **Workspace**)
-   - In the first cell, set `alias = "<your_alias>"` and `batch_number = 1`
-   - Click **Run All**. The output must show `Copied` for all four entities and `Done!` at the end
-   - Run the notebook again with `batch_number = 2`
+   - Open the [Load Training Data job](https://adb-1302321888178973.13.azuredatabricks.net/jobs/586698680803194?o=1302321888178973) in Databricks
+   - Click the arrow next to **Run now** and choose **Run now with different parameters**. Set `alias` to `<your_alias>` and `batch_number` to `1`, then click **Run**
+   - Wait until the job run has succeeded
+   - Run the job again with `batch_number` set to `2`
 
 > **Important:** The alias is case-sensitive.
 {: .exercise-note}

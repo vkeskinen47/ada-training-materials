@@ -169,9 +169,9 @@ Ask your trainer. You can skip the query and continue from the next checkpoint.
 
 `allow_automatic_deployment: true` is missing in `config/pipeline.yaml`. Add it, as in Exercise 1. For a commit you have already made, ask ADA to promote it to dev and start the deployment (`ada deploy promote --to DEV`, then `ada deploy start --to DEV --wait`).
 
-**3.11 The Load Training Data notebook does not show `Copied` for all four entities, or the DAG finds no files**
+**3.11 The Load Training Data job run fails, or the DAG finds no files**
 
-Check that the alias in the first cell is exactly your alias, in the same case as in your schema names (`staging_<your_alias>`). Run the notebook again with the right alias and batch number.
+Check that the `alias` parameter is exactly your alias, in the same case as in your schema names (`staging_<your_alias>`). Run the job again with **Run now with different parameters**, using the right alias and batch number.
 
 **3.12 A DAG run stays `QUEUED` for several minutes**
 
