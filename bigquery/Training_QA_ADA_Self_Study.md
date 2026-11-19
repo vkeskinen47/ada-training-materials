@@ -19,26 +19,17 @@ If ADA cannot help, look for your symptom here. Can't solve it? **Ask your train
 
 The virtual environment is not active in this terminal. In the project folder, run `source .venv/bin/activate` (Windows: `.venv\Scripts\activate`). Every new terminal needs this.
 
-**1.2 The installer says `no active virtual environment detected`**
+**1.2 `scripts/setup.py` says `Python x.y is not supported`**
 
-The installer was started outside a virtual environment. Create and activate one first, as in the installation steps of Exercise 1, then run the installer again.
+The Python you started the script with is older than 3.10 or newer than 3.14. The script looks for a supported interpreter and prints the command to use, for example `python3.13 scripts/setup.py` (Windows: `py -3.13 scripts/setup.py`). If it finds none, install Python 3.12 or 3.13 first, within your organisation's rules, and run the script again. The script creates the project's `.venv` folder only. Your other Python installations and projects stay as they are.
 
-**1.3 The installer says `requires Python >=3.10`**
+**1.3 The setup script stops at the ADA installation, or the installer says `requires Python >=3.10`**
 
-The virtual environment uses an older Python, for example 3.9. Create it again with a newer one:
-
-1. Check which Python you have: `python3 --version`. If you have no Python 3.10 or newer, install one first, within your organisation's rules.
-2. Leave the old environment: `deactivate`.
-3. Delete the `.venv` folder.
-4. Create a new environment with Python 3.12 or 3.13: `python3.13 -m venv .venv` (macOS and Linux) or `py -3.13 -m venv .venv` (Windows). Use the version you installed.
-5. Activate it and check `python --version`. It must show 3.12 or 3.13.
-6. Run the installer again.
+Read the last lines of the output. If the installer complains about the Python version, delete the `.venv` folder and run the script again with a supported Python, as in the previous question. If it complains about the network or a key, see 1.6 and 1.7.
 
 **1.4 `ada doctor` fails with `ModuleNotFoundError: No module named 'click'`**
 
-The installer did not finish installing ADA's dependencies. This happens with very new Python versions, such as 3.15. Create the environment again with Python 3.12 or 3.13, as in the previous question, for example `/opt/homebrew/bin/python3.13 -m venv .venv` on a Mac with Homebrew. Activate it, run the installer again and then `ada doctor`.
-
-This changes only the project's `.venv` folder. Your other Python installations and projects stay as they are, and outside the activated environment `python3` works as before.
+The installer did not finish installing ADA's dependencies. This happens with very new Python versions, such as 3.15. Delete the `.venv` folder and run `scripts/setup.py` again with Python 3.12 or 3.13, for example `/opt/homebrew/bin/python3.13 scripts/setup.py` on a Mac with Homebrew.
 
 **1.5 The installation is blocked by a firewall or security software**
 
@@ -46,7 +37,7 @@ ADA is installed with a script that downloads files, and a firewall or security 
 
 **1.6 `HTTP 401` or "authorization failed"**
 
-The API key ID or secret is wrong, or the key lacks the required permission. Check that you copied both values from your registration email. Enter them in the terminal when ADA asks for them, not into the chat.
+The API key ID or secret is wrong, or the key lacks the required permission. Check that you copied both values from your registration email. Enter them in the terminal when the setup script asks for them, not into the chat, and run `python3 scripts/setup.py` again. The script asks for the key again if the installation did not finish.
 
 **1.7 "Unreachable" or a network error**
 
@@ -54,7 +45,7 @@ Your IP address is probably not allowed in the tenant's access rules. Contact yo
 
 **1.8 `ada doctor` does not list the dev environment**
 
-The dev credentials were not saved. Run `ada config --env dev` again and type the key values in the terminal.
+The dev credentials were not saved. Run `ada config credentials --env dev` and type the key values in the terminal.
 
 **1.9 `ada doctor` lists the dev environment twice**
 
@@ -62,7 +53,7 @@ The doctor reads the environments from `config/pipeline.yaml`. Ask ADA to read t
 
 **1.10 `ada doctor` says that skills are not found or the skills manifest is missing**
 
-Run `ada skills update`, as the message suggests, and run `ada doctor` again. If you have not run `ada init` in this project yet, run that first.
+Run `ada skills update`, as the message suggests, and run `ada doctor` again. If the setup script did not finish, run `python3 scripts/setup.py` again: it runs `ada init`.
 
 **1.11 `ada doctor` says `Missing config/sources.yaml`**
 
@@ -82,7 +73,7 @@ The dev key does not have the permission for that command. Ask your trainer.
 
 **1.15 ADA previews or writes SQL that looks like Snowflake SQL, for example `DATEDIFF` or `count_if`**
 
-`target_database: BIGQUERY` is missing in `config/pipeline.yaml`. Add it, as in Exercise 1, and ask ADA to preview or generate the SQL again.
+`target_database: BIGQUERY` is missing in `config/pipeline.yaml`. The setup script sets it. Run `python3 scripts/setup.py` again, or add the line yourself, and ask ADA to preview or generate the SQL again.
 
 **1.16 There is no Start link above the MCP servers in `.vscode/mcp.json`**
 
