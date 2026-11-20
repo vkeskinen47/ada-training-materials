@@ -10,7 +10,7 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ---
 
-## Part A — Install ADA and Connect to ADE
+## Install ADA and Connect to ADE
 
 Estimated duration: 70 minutes
 
@@ -31,65 +31,52 @@ In this training your trainer provides the API keys. In your own organisation, k
 1) Download the starter project to your local machine:
 https://www.agiledataengine.com/hubfs/Training/ada_starter_project.zip
 
-2) Extract the ZIP file and open the `ada_starter_project` folder in VS Code. It contains a `README.md` and the FLEETOPS sample files in `source_data/fleetops/`.
+2) Extract the ZIP file and open the `ada_starter_project` folder in VS Code. It contains a `README.md`, the setup script `scripts/setup.py`, and the FLEETOPS sample files in `source_data/fleetops/`.
 
 > **Important:** Do not rename or move the sample files. ADA derives entity names from the file names.
 {: .exercise-note}
 
-3) Open a terminal in VS Code and create and activate a virtual environment. The installer refuses to run without one.
+3) Open a terminal in VS Code and run the setup script:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python3 scripts/setup.py           # Windows: python scripts\setup.py
 ```
 
-4) Run the installer:
+> **Note:** On Windows, start the script with `python`, as shown. Running `.\scripts\setup.py` directly opens a separate console window that closes when the script ends.
+{: .exercise-note}
 
-```bash
-curl -fsSL https://artifacts.saas.agiledataengine.com/install.sh | bash
-```
+The script checks your Python version and tells you which interpreter to use if it is not supported (3.10 to 3.14, 3.12 or 3.13 recommended). Then it asks three questions:
 
-Windows (PowerShell): `irm https://artifacts.saas.agiledataengine.com/install.ps1 | iex`
+| Question | Answer |
+|---|---|
+| ADE tenant ID | The tenant ID from your registration email |
+| Alias | Your alias, in lowercase |
+| AI coding tool | The tool you use: GitHub Copilot, Claude Code or both |
 
-5) When prompted, enter the tenant ID and installation name from your registration email, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
+It shows what it will do and asks for confirmation. Then it works through five steps:
+
+- creates a virtual environment in `.venv` and installs ADA. The installer asks for your **design** key ID and secret and checks the key before it installs anything
+- scaffolds the project with `ada init`. Your sample files are kept
+- writes your alias and the target database to `config/pipeline.yaml`
+- asks for your **dev** key ID and secret, stores them, and fetches the tenant's configuration (entity types, load templates, schedules) with `ada config pull`
+- puts the project under version control with an initial Git commit
 
 | If you see | It means | What to do |
 |---|---|---|
-| `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly |
+| `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly, then re-run the script |
 | Unreachable / network error | Your IP address is not allowed | Contact your trainer |
+| `Python x.y is not supported` | The Python you started the script with is too old or too new | Run the script with the interpreter the message names |
 
-6) When the installer prints `ada-cli <version> installed`, scaffold the project:
+The script is safe to re-run, for example after a wrong key or a typo in the alias.
 
-```bash
-ada init                           # Claude Code users: ada init --tool claude
-```
-
-Your sample files in `source_data/` are kept.
-
-7) Add the dev key. Answer the tenant and installation prompts, then paste the **dev** key ID and secret.
-
-```bash
-ada config credentials --env dev
-```
-
-This also registers `dev` as a runtime environment in `config/pipeline.yaml`.
-
-8) Fetch the tenant's configuration, which includes entity types, load templates and schedules:
-
-```bash
-ada config pull
-```
-
-9) Optional: put the project under version control. `ada push` works without Git, but with Git ADA saves a commit for every push and pull, so you can revert a change. Later exercises also ask ADA to commit design documents to Git. If Git is not installed, skip this step and the Git commit prompts later.
-
-```bash
-git init
-git add -A
-git commit -m "Initial ADA project"
-```
-
-> **Note:** If you use Git, ADA uses it for you from now on. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
+> **Note:** ADA uses Git for you from now on. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why. If Git is not installed, the script skips it. ADA works without Git too.
 {: .exercise-note}
+
+4) Activate the virtual environment in your terminal. The script prints the command at the end:
+
+```bash
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+```
 
 ### Checkpoint A1
 
@@ -106,7 +93,7 @@ ADE environment reachable: <tenant ID>/<installation>/dev
 
 ### Optional: connect your AI tool to ADE with MCP
 
-MCP (Model Context Protocol) lets the AI agent query ADE directly — for example, which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
+MCP (Model Context Protocol) lets the AI agent query ADE directly, for example which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
 
 1) Generate the configuration for both environments:
 
@@ -118,39 +105,48 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 2) Connect:
 
-- **VS Code:** open `.vscode/mcp.json` and click <span class="ui-action">Start</span> above each server (`ade-mcp-design`, `ade-mcp-dev`). VS Code asks for the key ID and secret of each environment and stores them securely.
+- **VS Code:** VS Code finds `.vscode/mcp.json` only when the project folder is the folder you opened in VS Code. Start each server (`ade-mcp-design`, `ade-mcp-dev`), either with the <span class="ui-action">Start</span> link above the server in `mcp.json`, or from the Command Palette: <span class="ui-action">MCP: List Servers</span>, select the server, <span class="ui-action">Start Server</span>. VS Code asks for the key ID and secret of each environment and stores them securely.
 - **Claude Code:** set the environment variables `ADE_DESIGN_API_KEY_ID`, `ADE_DESIGN_API_KEY_SECRET`, `ADE_DEV_API_KEY_ID` and `ADE_DEV_API_KEY_SECRET` before you start `claude`.
 
 3) Test it. **Example prompt:**
 
 > Use the ADE MCP server to check that you can reach ADE, and tell me the name of my API key.
 
-### Give ADA your alias
+### Check your configuration
 
 From now on, you work through ADA. Start ADA in your AI tool:
 
 - **GitHub Copilot in VS Code:** open Copilot Chat in <span class="ui-action">Agent</span> mode and select the `ada-developer` agent
 - **Claude Code:** start `claude` in the project folder
 
-Many trainees share the same ADE tenant, so every schema and package needs your alias. Set it for all entity types at once, so that nothing you create later lands in a shared default schema.
+Many trainees share the same ADE tenant, so every schema and package needs your alias. The setup script has already set the alias for all entity types at once, so that nothing you create later lands in a shared default schema.
 
-**Example prompt:**
+**Review:** open `config/pipeline.yaml` and check the values yourself. Your alias is `<your_alias>` in the examples below:
 
-> My alias is `<your_alias>`. Configure the project so that:
-> - SOURCE entities go to schema `src_<your_alias>`
-> - STAGE entities go to schema `staging_<your_alias>`
-> - HUB, LINK, SAT, SAT_C and S_SAT entities go to schema `rdv_<your_alias>`
-> - DIM and FACT entities go to schema `publish_<your_alias>`
-> - all package names get the postfix `<YOUR_ALIAS>`
+```yaml
+target_database: SNOWFLAKE
+schema_overrides:
+  SOURCE: src_<your_alias>
+  STAGE: staging_<your_alias>
+  HUB: rdv_<your_alias>
+  LINK: rdv_<your_alias>
+  SAT: rdv_<your_alias>
+  SAT_C: rdv_<your_alias>
+  S_SAT: rdv_<your_alias>
+  FACT: publish_<your_alias>
+  DIM: publish_<your_alias>
+package_name_postfix_override: <YOUR_ALIAS>
+```
 
-**Under the hood:** ADA adds `schema_overrides` and `package_name_postfix_override` to `config/pipeline.yaml`.
+**Under the hood:** ADA reads `schema_overrides` and `package_name_postfix_override` from `config/pipeline.yaml` whenever it generates an entity or a package. `target_database` tells ADA which SQL dialect to write and render.
 
-**Review:** open `config/pipeline.yaml` and check the values yourself.
+> **Tip:** If a value is wrong, for example a typo in the alias, re-run `python3 scripts/setup.py` with the right alias, or edit `config/pipeline.yaml` yourself and run `ada doctor` again.
+{: .exercise-note}
 
 > **Note:** Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
 {: .exercise-note}
 
-> **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
+> **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine: the checkpoints describe what must be **true**, not what must be identical.
 {: .exercise-note}
 
 ### Bring the basic-training pipeline into the project
@@ -168,7 +164,7 @@ The starter project contains a copy of the complete basic-training pipeline in `
 
 2) Create your packages from the copy. **Example prompt:**
 
-> Copy the three packages in `model_packages/` into `packages/`. In the copies, replace `zzalias` with `<your_alias>` and `ZZALIAS` with `<YOUR_ALIAS>` everywhere — in folder names, file contents and SQL files. Do not change anything in `model_packages/`.
+> Copy the three packages in `model_packages/` into `packages/`. In the copies, replace `zzalias` with `<your_alias>` and `ZZALIAS` with `<YOUR_ALIAS>` everywhere: in folder names, file contents and SQL files. Do not change anything in `model_packages/`.
 
 > **Note:** The placeholder also renames the schedule to `TAXIDATA_<YOUR_ALIAS>`. Until you have replaced it and created that schedule, `ada validate` reports `TAXIDATA_ZZALIAS` as an unknown schedule.
 {: .exercise-note}
@@ -194,6 +190,8 @@ The starter project contains a copy of the complete basic-training pipeline in `
 | 3. Dry run | `ada push --dry-run` | ADE accepts the change |
 | 4. Push | `ada push` | The upserted count matches the plan |
 | 5. Deploy | `ada deploy commit`, `ada deploy promote --to DEV`, `ada deploy start --to DEV --wait` | Every package shows `SUCCESS` |
+
+You use the dry run in this exercise to see what it checks. Later exercises go straight from the plan to the push. A commit alone does not deploy anything: every deployment needs the commit, the promotion to DEV and the deployment itself.
 
 3) Push and deploy. **Example prompt:**
 
@@ -229,13 +227,13 @@ join ADE_TRAINING_DEV_SAAS.RDV_<your_alias>.S_TAXI_ZONE_C s on h.dv_id = s.dv_id
 
 ---
 
-## Part B — Add the FLEETOPS Source
+## Add the FLEETOPS Source
 
 Estimated duration: 25 minutes
 
 The `FLEETOPS` source system already exists in ADE (`CONFIG_SYSTEMS`). Your task is to describe the source files to ADA so that it can create the SOURCE and STAGE entities.
 
-> **Why sample files?** `source_data/fleetops/` contains a **sample extract** — the first week of January — not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
+> **Why sample files?** `source_data/fleetops/` contains a **sample extract**: the first week of January, not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
 {: .exercise-note}
 
 1) **Example prompt:**
@@ -289,11 +287,11 @@ STG_FLEETOPS_<YOUR_ALIAS>:
 Plan: 6 to create, 0 to modify, 0 to delete.
 ```
 
-If you see your alias in every schema and in the package name, your alias configuration from Part A works. If the plan shows anything to modify or delete, stop and find out why before you continue.
+If you see your alias in every schema and in the package name, your alias configuration works. If the plan shows anything to modify or delete, stop and find out why before you continue.
 
 ---
 
-## Part C — Load the Files into Staging
+## Load the Files into Staging
 
 Estimated duration: 45 minutes
 
@@ -334,7 +332,7 @@ FROM
   ) FILE_FORMAT=(type='csv' skip_header=0 field_delimiter=',' FIELD_OPTIONALLY_ENCLOSED_BY='"' COMPRESSION='AUTO');
 ```
 
-The default template fits the basic-training folder layout, not this source. Before you read on, try to find **three problems** yourself, using what you know from Part B and the folder layout above.
+The default template fits the basic-training folder layout, not this source. Before you read on, try to find **three problems** yourself, using what you know from the earlier steps and the folder layout above.
 
 <details markdown="1">
 <summary markdown="span">The three problems</summary>
@@ -398,7 +396,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada dag trigger --dag-id FLEETOPS_<YOUR_ALIAS> --env dev --wait`
 
-### Checkpoint C2 — the DAG fails
+### Checkpoint C2: the DAG fails
 
 **The DAG fails. This is expected.**
 
@@ -431,7 +429,7 @@ from ADE_TRAINING_DEV_SAAS.STAGING_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 
 You have:
 
-- installed ADA with the official installer and connected it to the design and dev environments
+- installed ADA with the setup script and connected it to the design and dev environments
 - brought your basic-training work into the project as YAML
 - described a new source to ADA and reviewed the entities it generated
 - found and fixed three problems in a generated load before they reached ADE

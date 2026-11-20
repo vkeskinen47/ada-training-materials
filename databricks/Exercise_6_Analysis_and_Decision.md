@@ -116,7 +116,7 @@ What does the result mean for the model?
 
 4) Almost all reference taxi trips start at night or early in the morning. Only 9 of about 8,000 start between 10:00 and 15:00. The model therefore uses the taxi **price level** per borough, not taxi **demand at midday**. The data neither supports nor refutes the 0.5 utilisation at midday. This is the most important limitation of the memo.
 
-5) No. Without the kilometre conversion, Brooklyn's margin would be about 28.2 instead of 28.9. not every data quality issue changes the decision, and knowing which ones do is part of the job. The memo should still state how each issue was handled.
+5) No. Without the kilometre conversion, Brooklyn's margin would be about 28.2 instead of 28.9. Not every data quality issue changes the decision, and knowing which ones do is part of the job. The memo should still state how each issue was handled.
 
 </details>
 

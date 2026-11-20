@@ -1,12 +1,15 @@
 ---
 layout: exercise
-module_label: "Module 3: Exercise 6"
+module_label: "Optional extension: Exercise 6"
 title: "Analysis and Decision"
 duration: "1 hour"
 summary: "Apply the agreed decision model to publish data, interpret its limits, and write a borough-level recommendation memo for management."
 ---
 
 Snowflake as the target database. Example alias in this document: `test`. Replace `<your_alias>` with your own alias everywhere.
+
+> **Optional:** This exercise is not required to complete the course. It finishes the business story: you apply PackageDelivery's decision model to the publish layer you built in Exercise 5 and write a recommendation for management.
+{: .exercise-note}
 
 > **Decision question:** Should PackageDelivery offer taxi service with its idle vans, and where? A sound recommendation may be “insufficient evidence” when the data cannot support a yes-or-no answer.
 {: .exercise-note}
@@ -28,11 +31,11 @@ The fleet terms *taxi-capable*, *idle* and *home borough* are the rules R3–R5 
 
 ---
 
-## Part A — Hypotheses First
+## Hypotheses First
 
 Estimated duration: 10 minutes
 
-Before you query anything, write down your expectation for each borough — in a note, not to ADA. You have seen the data in the earlier exercises.
+Before you query anything, write down your expectation for each borough, in a note, not to ADA. You have seen the data in the earlier exercises.
 
 | Borough | Your expected verdict | Why |
 |---|---|---|
@@ -42,12 +45,12 @@ Before you query anything, write down your expectation for each borough — in a
 | Bronx | | |
 | Staten Island | | |
 
-> **Note:** A hypothesis written before the analysis protects you from reading into the numbers whatever you hoped to see. Where the result differs from your hypothesis, you have learned something — note what.
+> **Note:** A hypothesis written before the analysis protects you from reading into the numbers whatever you hoped to see. Where the result differs from your hypothesis, you have learned something: note what.
 {: .exercise-note}
 
 ---
 
-## Part B — Compute the Metrics
+## Compute the Metrics
 
 Estimated duration: 20 minutes
 
@@ -57,7 +60,7 @@ Estimated duration: 20 minutes
 >
 > Use `F_TRIP` and `D_TAXI_ZONE` in `PUBLISH_<YOUR_ALIAS>` for the taxi figures, and my FLEETOPS publish entities for the fleet figures. Return one row per borough with every input of D1–D5, the results of the four confidence checks, the margin, the monthly potential and the verdict. Comment each part of the query with the rule it implements.
 
-**Under the hood:** ADA reads the publish YAML to find the tables and columns. It cannot run the query in Snowflake — you do.
+**Under the hood:** ADA reads the publish YAML to find the tables and columns. It cannot run the query in Snowflake: you do.
 
 2) Before you run it, ask ADA to show which line implements which rule. Check D5 especially: the vehicles count by **home borough**, but the movements, zones and taxi pickups count by the borough of the **zone**.
 
@@ -75,18 +78,18 @@ Compare your result with the reference. Small differences (±1 in the last digit
 | Manhattan | 79.3 | 8 % | 2.3 | 34.4 | 2,035 | passes | **Do not expand** |
 | Brooklyn | 72.4 | 0 % | 15.8 | 28.9 | 11,898 | passes | **Expand** |
 | Queens | 86.1 | 38 % | 13.2 | 33.6 | 11,551 | passes | **Expand, airport-weighted** |
-| Bronx | 73.5 | 0 % | 1.2 | 29.2 | — | fails: 2 vehicles, 16 zones | **Insufficient evidence** |
-| Staten Island | — | — | 0.0 | — | — | fails: 1 vehicle, 313 movements, 2 zones, no taxi pickups | **Insufficient evidence** |
+| Bronx | 73.5 | 0 % | 1.2 | 29.2 | not reported | fails: 2 vehicles, 16 zones | **Insufficient evidence** |
+| Staten Island | n/a | n/a | 0.0 | n/a | not reported | fails: 1 vehicle, 313 movements, 2 zones, no taxi pickups | **Insufficient evidence** |
 
 If a figure differs, paste your result to ADA, tell it which figure differs from which reference value, and ask which rule could explain the difference. Fix the query, not the reference.
 
 ---
 
-## Part C — Interpret
+## Interpret
 
 Estimated duration: 15 minutes
 
-Numbers do not make a decision. Answer these questions **in a note** — you will give your answers to ADA in Part D. Where you need extra queries, ADA writes them and you run them in Snowflake.
+Numbers do not make a decision. Answer these questions **in a note**. You will give your answers to ADA when you write the memo. Where you need extra queries, ADA writes them and you run them in Snowflake.
 
 1) Manhattan has the **highest** margin per idle hour. Why is the verdict still *do not expand*?
 
@@ -100,26 +103,26 @@ Numbers do not make a decision. Answer these questions **in a note** — you wil
 
 What does the result mean for the model?
 
-5) Did the data issues you handled earlier — the kilometres, the NULL dropoffs, the unknown zones — change any verdict?
+5) Did the data issues you handled earlier (the kilometres, the NULL dropoffs, the unknown zones) change any verdict?
 
 <details markdown="1">
 <summary markdown="span">Discussion</summary>
 
-1) Manhattan's fleet is almost fully busy: 2.3 idle hours per day against the required 8, and 9 of its 14 vehicles are box trucks that cannot carry passengers. There is nothing to convert. Entering Manhattan would need new vehicles and drivers — a different decision from the one asked. The naive per-hour analysis says yes; that is the trap.
+1) Manhattan's fleet is almost fully busy: 2.3 idle hours per day against the required 8, and 9 of its 14 vehicles are box trucks that cannot carry passengers. There is nothing to convert. Entering Manhattan would need new vehicles and drivers: a different decision from the one asked. The naive per-hour analysis says yes; that is the trap.
 
-2) The confidence rule. Two vehicles and 16 zones are not enough evidence. *Insufficient evidence* is not *no* — it means the data cannot answer the question. Staten Island fails every check.
+2) The confidence rule. Two vehicles and 16 zones are not enough evidence. *Insufficient evidence* is not *no*; it means the data cannot answer the question. Staten Island fails every check.
 
 3) Brooklyn's margin turns negative at a utilisation of about 10 % (0.10 × 72.4 ≈ 0.66 × 11.0). The verdicts for Brooklyn and Queens hold over a wide range. The memo should still name 0.5 as an assumption.
 
-4) Almost all reference taxi trips start at night or early in the morning. Only 9 of about 8,000 start between 10:00 and 15:00. The model therefore uses the taxi **price level** per borough, not taxi **demand at midday**. The data neither supports nor refutes the 0.5 utilisation at midday — this is the most important limitation of the memo.
+4) Almost all reference taxi trips start at night or early in the morning. Only 9 of about 8,000 start between 10:00 and 15:00. The model therefore uses the taxi **price level** per borough, not taxi **demand at midday**. The data neither supports nor refutes the 0.5 utilisation at midday. This is the most important limitation of the memo.
 
-5) No. Without the kilometre conversion, Brooklyn's margin would be about 28.2 instead of 28.9. Not every data quality issue changes the decision — and knowing which ones do is part of the job. The memo should still state how each issue was handled.
+5) No. Without the kilometre conversion, Brooklyn's margin would be about 28.2 instead of 28.9. Not every data quality issue changes the decision, and knowing which ones do is part of the job. The memo should still state how each issue was handled.
 
 </details>
 
 ---
 
-## Part D — Write the Memo
+## Write the Memo
 
 Estimated duration: 15 minutes
 
@@ -127,11 +130,11 @@ Estimated duration: 15 minutes
 
 > Draft a decision memo for PackageDelivery's management in `docs/decision_memo_fleetops.md`, at most 600 words. Structure: the recommendation per borough in one table; the key figures behind each verdict; the decision model and its assumptions; what the data does not tell us; how data quality issues were handled.
 >
-> Use only figures from my query results. The data quality section may describe the issues without figures. The verdicts follow the model; where the data questions an assumption of the model, say so under *what the data does not tell us*, but do not change the verdicts — management decides whether to change the model.
+> Use only figures from my query results. The data quality section may describe the issues without figures. The verdicts follow the model; where the data questions an assumption of the model, say so under *what the data does not tell us*, but do not change the verdicts: management decides whether to change the model.
 >
 > My query results: [paste your query results]
 >
-> My interpretation: [paste your answers from Part C]
+> My interpretation: [paste your answers to the interpretation questions]
 
 2) Let ADA check the draft against the results. **Example prompt:**
 
@@ -144,15 +147,11 @@ Estimated duration: 15 minutes
 | Every figure comes from your query results | An agent can produce plausible numbers. The memo may only contain numbers you can show |
 | Every verdict follows D4 and D5. For example, Manhattan has a positive margin but less than 8 idle hours, so it is *Do not expand* | The model, not the writer, decides the verdict |
 | The assumptions are named: utilisation 0.5, driver cost excluded, 8 idle hours per day | Management must be able to disagree with them |
-| Bronx and Staten Island say **Insufficient evidence**, with the reason — not *no* | The difference matters for the next decision |
+| Bronx and Staten Island say **Insufficient evidence**, with the reason, not *no* | The difference matters for the next decision |
 | The midday demand limitation is stated | It is the biggest uncertainty in the recommendation |
 | Your NULL dropoff decision from Exercise 4 is stated | The figures depend on it |
 
 Tell ADA what to change until every check passes.
-
-4) Commit the memo. **Example prompt:**
-
-> Commit only `docs/decision_memo_fleetops.md` to Git with the message "FLEETOPS decision memo".
 
 ### Checkpoint D
 
@@ -164,9 +163,8 @@ Your memo:
 - states the midday demand limitation
 - states how the NULL dropoffs, the distance units and the unknown zones were handled
 - contains only figures you can trace to a query
-- is committed to Git
 
-Compare the result with your hypotheses from Part A. Where were you wrong, and why?
+Compare the result with your hypotheses. Where were you wrong, and why?
 
 ---
 
@@ -181,15 +179,9 @@ You have:
 
 ---
 
-## End of the course
+## End of the extension
 
-Over six exercises you took a new source from raw files to a management decision — without writing the YAML, the loads or the queries yourself. What you did instead:
-
-- **Specified** — business questions, rules and decisions, precise enough for an agent to act on
-- **Reviewed** — designs, plans, SQL and numbers, and rejected them when they were wrong
-- **Verified** — against row counts, known figures and your own hypotheses
-
-ADA did the construction. The decisions, and the responsibility for them, stayed with you. That is the job of a data engineer working with an agent.
+You took the publish layer from Exercise 5 all the way to a management decision. ADA wrote the query and the memo; the verdicts, the assumptions and the limitations are yours to defend.
 
 ---
 

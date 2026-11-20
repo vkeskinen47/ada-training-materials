@@ -13,7 +13,7 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ---
 
-## Part A — Find What Failed
+## Find What Failed
 
 Estimated duration: 15 minutes
 
@@ -47,11 +47,11 @@ Notice the **two spaces** in `Timestamp  is not recognized`. ADE hides the data 
 
 ---
 
-## Part B — Find the Root Cause
+## Find the Root Cause
 
 Estimated duration: 15 minutes
 
-1) In Snowflake, open <span class="ui-action">Monitoring → Query History</span>, search for the QueryId from Part A, and copy the full error message.
+1) In Snowflake, open <span class="ui-action">Monitoring → Query History</span>, search for the QueryId from the failed load, and copy the full error message.
 
 2) Paste the error to ADA and let it explain. **Example prompt** (to `ada-developer`):
 
@@ -92,7 +92,7 @@ You can answer these questions:
 
 - The value `15.02.2017 06:57:00` on line 10446 in column `movement_start_ts`
 - 223 rows, from vehicles `VEH-0022`, `VEH-0023` and `VEH-0034`
-- All three are `VAN_EU` vehicles — vans imported from Europe
+- All three are `VAN_EU` vehicles: vans imported from Europe
 - From 15 February 2017. Before that date, the same vans wrote timestamps in the normal format. Something changed in their telematics on that day
 - ADA inferred the column types from the **sample**, which covers only the first week of January. The problem did not exist yet
 
@@ -100,7 +100,7 @@ You can answer these questions:
 
 ---
 
-## Part C — Decide and Fix
+## Decide and Fix
 
 Estimated duration: 15 minutes
 
@@ -118,10 +118,10 @@ There are several ways to handle this. Think about each before you read on:
 <details markdown="1">
 <summary markdown="span">Discussion</summary>
 
-- **A** — do it anyway, but you still need a fix today.
-- **B** — Snowflake skips the bad rows. The load is green and 223 movements are silently missing. That is worse than a failed load.
-- **C** — tempting, but Snowflake does not handle conversion errors inside COPY INTO the way it does in a normal query. Expect a new error.
-- **D** — the staging layer stays a faithful copy of the source, and the format rule (*EU vans write DD.MM.YYYY*) becomes an explicit, documented business rule in the next layer. **This is the fix you will implement.**
+- **A:** do it anyway, but you still need a fix today.
+- **B:** Snowflake skips the bad rows. The load is green and 223 movements are silently missing. That is worse than a failed load.
+- **C:** tempting, but Snowflake does not handle conversion errors inside COPY INTO the way it does in a normal query. Expect a new error.
+- **D:** the staging layer stays a faithful copy of the source, and the format rule (*EU vans write DD.MM.YYYY*) becomes an explicit, documented business rule in the next layer. **This is the fix you will implement.**
 
 </details>
 
@@ -137,7 +137,9 @@ There are several ways to handle this. Think about each before you read on:
 
 2) **Example prompt:**
 
-> Push the FLEETOPS staging package, commit it with the message "Stage movement timestamps as text" and wait for the deployment. Then trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
+> Push the FLEETOPS staging package. Commit it in ADE with the message "Stage movement timestamps as text", promote it to DEV, deploy it and wait for the deployment. Then trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
+
+**Under the hood:** `ada push -p STG_FLEETOPS_<YOUR_ALIAS>`, `ada deploy commit`, `ada deploy promote --to DEV`, `ada deploy start --to DEV --wait`, then `ada dag trigger --dag-id FLEETOPS_<YOUR_ALIAS> --env dev --wait`
 
 ### Checkpoint C
 
@@ -174,7 +176,7 @@ You have:
 - weighed four fixes and chosen the one that keeps staging faithful to the source
 - fixed and reloaded the data without duplicating anything
 
-All three FLEETOPS files are now in staging. The timestamps of 223 movements are still in two formats. Remember this rule — it belongs to the next layers:
+All three FLEETOPS files are now in staging. The timestamps of 223 movements are still in two formats. Remember this rule: it belongs to the next layers:
 
 > **EU vans (`VAN_EU`) write timestamps as `DD.MM.YYYY HH24:MI:SS` from 15 February 2017.**
 

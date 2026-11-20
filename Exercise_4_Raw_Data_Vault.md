@@ -2,7 +2,7 @@
 layout: exercise
 module_label: "Module 2: Exercise 4"
 title: "Generate and Load the Raw Data Vault"
-duration: "1 hour 30 minutes"
+duration: "1 hour 15 minutes"
 summary: "Generate and load the FLEETOPS Raw Data Vault, extend the shared H_TAXI_ZONE hub, and verify that fleet and taxi data meet on the same zones."
 ---
 
@@ -10,7 +10,7 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ---
 
-## Part A — Measure the Starting Point
+## Measure the Starting Point
 
 Estimated duration: 10 minutes
 
@@ -37,7 +37,7 @@ order by 1;
 
 > How many loads does the entity `H_TAXI_ZONE` in `packages/traffic_dv_<your_alias>/` have, and from which source entities and columns? Do not change anything.
 
-These loads are the pattern you extend in Part B: the FLEETOPS zone columns get loads of the same kind.
+These loads are the pattern you extend in the next section: the FLEETOPS zone columns get loads of the same kind.
 
 ### Checkpoint A
 
@@ -56,12 +56,12 @@ These loads are the pattern you extend in Part B: the FLEETOPS zone columns get 
 
 </details>
 
-> **Note:** Write down 269. You will check it again in Part D.
+> **Note:** Write down 269. You will check it again at the end of this exercise.
 {: .exercise-note}
 
 ---
 
-## Part B — Generate the Entities
+## Generate the Entities
 
 Estimated duration: 30 minutes
 
@@ -87,7 +87,7 @@ Check:
 | Check | Why |
 |---|---|
 | Every schema and package name contains your alias | Otherwise you overwrite someone else's work |
-| The entities match the design document | The design is the specification. If ADA deviates, ask why — then fix the YAML or the design |
+| The entities match the design document | The design is the specification. If ADA deviates, ask why, then fix the YAML or the design |
 | `H_TAXI_ZONE` has a new load for every zone column in the design: pickup, dropoff and depot | A missing load means missing zones |
 | The movement timestamps are still text in the satellite | The format rule from Exercise 2 belongs to a later layer, not to the Raw Data Vault |
 | The NULL zone handling matches the design | See below |
@@ -95,13 +95,9 @@ Check:
 If you accept a deviation from the design, ask ADA to update the design document too. The design must describe what is actually built.
 
 <details markdown="1">
-<summary markdown="span">NULL zone IDs — what to look for</summary>
+<summary markdown="span">NULL zone IDs: what to look for</summary>
 
-ADE's hash key and business key transformations turn a NULL into `'-1'`. Unless the load filters the NULL rows out, the 40 movements without a dropoff zone create a new hub row with the key `'-1'`.
-
-Both are valid choices — filtering the rows out, or keeping `'-1'` as an explicit *unknown zone* — as long as it is the choice written in your design. If the design is silent, decide now and ask ADA to record it.
-
-Avoid a custom formula that maps NULL to something else, such as `'UNKNOWN'`. The five taxi loads into the same hub already use ADE's `'-1'`, so a custom value gives one hub two conventions for *unknown*, and a formula that differs from ADE's standard can break the hash keys that connect fleet zones to taxi zones.
+ADE's key transformations turn a NULL zone ID into the key `'-1'`. Filtering the NULL dropoffs out, or keeping `'-1'` as an *unknown zone*, are both fine, as long as the design says which. Do not accept a custom formula such as `'UNKNOWN'`: the taxi loads into the same hub already use `'-1'`.
 
 </details>
 
@@ -113,52 +109,39 @@ Avoid a custom formula that maps NULL to something else, such as `'UNKNOWN'`. Th
 
 ---
 
-## Part C — Deploy and Run
+## Deploy and Run
 
-Estimated duration: 25 minutes
+Estimated duration: 10 minutes
 
-1) Push the new packages and the modified `TRAFFIC_DV_<YOUR_ALIAS>`. **Example prompt:**
+1) Push, commit and deploy. **Example prompt:**
 
-> Push all new Data Vault packages and `TRAFFIC_DV_<YOUR_ALIAS>` in one batch, with a dry run first. Do not commit them in ADE yet.
+> Push all new Data Vault packages and `TRAFFIC_DV_<YOUR_ALIAS>` in one batch. Then commit them in ADE with the message "FLEETOPS Raw Data Vault", promote them to DEV, deploy them and wait for the deployment.
 
-**Under the hood:** `ada push --dry-run`, then `ada push` with every package. The packages reference each other, so they are pushed in one batch. `ada push` refuses uncommitted changes, so ADA commits the YAML to Git first.
+**Under the hood:** `ada push` with every package in one batch, because the packages reference each other. Then `ada deploy commit`, `ada deploy promote --to DEV` and `ada deploy start --to DEV --wait`.
 
-2) Before deployment, review the mapping you generated locally. **Example prompt:**
-
-> Show me the FLEETOPS dropoff mapping in the local `packages/traffic_dv_<your_alias>/h_taxi_zone.yaml`. Explain how its key and hash key are derived for a normal value and for a NULL value. Compare this with the decision in my design document.
-
-3) Commit the packages. **Example prompt:**
-
-> Commit all new Data Vault packages and `TRAFFIC_DV_<YOUR_ALIAS>` in ADE with the message "FLEETOPS Raw Data Vault" and wait for the deployments.
-
-4) Check which loads belong to the DAG. **Example prompt:**
-
-> List the loads of the DAG `FLEETOPS_<YOUR_ALIAS>` in dev.
-
-**Under the hood:** `ada workflow describe --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`.
-
-Then open DEV <span class="ui-action">Workflow Orchestration</span> and the DAG `FLEETOPS_<YOUR_ALIAS>` in the <span class="ui-action">Graph view</span>, which shows the same loads and their order.
+2) Open DEV <span class="ui-action">Workflow Orchestration</span> and the DAG `FLEETOPS_<YOUR_ALIAS>` in the <span class="ui-action">Graph view</span>. Check:
 
 - Are the new Data Vault loads there?
 - Are the new `H_TAXI_ZONE` loads in **this** DAG, or in `TAXIDATA_<YOUR_ALIAS>`?
 
-> **Note:** ADE builds the DAGs from load dependencies. Only the staging loads have a schedule; every Data Vault load inherits it from the load it depends on. The new `H_TAXI_ZONE` loads read FLEETOPS staging, so they run with FLEETOPS, even though the entity belongs to a taxi package. You do not set a schedule on Data Vault loads.
+If the new loads are not there yet, wait a minute and refresh. ADE updates the DAG after the deployment, and a run that starts before that does not run the new loads.
+
+> **Note:** ADE builds the DAGs from load dependencies. Only the staging loads have a schedule, and every Data Vault load inherits it from the load it depends on. The new `H_TAXI_ZONE` loads read FLEETOPS staging, so they run with FLEETOPS, even though the entity belongs to a taxi package.
 {: .exercise-note}
 
-5) Trigger the DAG. **Example prompt:**
+3) Trigger the DAG. **Example prompt:**
 
 > Trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
 
 ### Checkpoint C
 
-- The local `H_TAXI_ZONE` YAML mapping uses the NULL handling written in your design
 - All packages deployed with `SUCCESS`
-- The DAG `FLEETOPS_<YOUR_ALIAS>` contains the new Data Vault loads and the new `H_TAXI_ZONE` loads
+- The Graph view of `FLEETOPS_<YOUR_ALIAS>` shows the new Data Vault loads and the new `H_TAXI_ZONE` loads
 - The DAG succeeds
 
 ---
 
-## Part D — Verify
+## Verify
 
 Estimated duration: 25 minutes
 
@@ -170,7 +153,7 @@ A green DAG is not a correct result. Check the data.
 
 Run the query in Snowflake. Every `row_count` should equal its `expected_count`. If one does not, paste the result to ADA and ask it to explain.
 
-2) The headline check — the shared hub:
+2) The headline check, the shared hub:
 
 ```sql
 select
@@ -191,10 +174,6 @@ The FLEETOPS data uses the same NYC zone IDs as the taxi data. Three new loads w
 | Anything else | Something went wrong. Paste the result to ADA, and compare the zone keys in FLEETOPS with the hub |
 
 If you got 270 without having decided it, you have found a *silent* data quality issue: the pipeline is green, but the data is not what you assumed. Ask ADA to explain where the extra row comes from and what your options are. Then decide, and record the decision in the design document.
-
-3) Commit your work. **Example prompt:**
-
-> Commit the remaining changes, such as the updated design document, to Git with the message "FLEETOPS Raw Data Vault loaded".
 
 ---
 

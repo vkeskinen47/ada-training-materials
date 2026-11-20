@@ -19,68 +19,72 @@ If ADA cannot help, look for your symptom here. Can't solve it? **Ask your train
 
 The virtual environment is not active in this terminal. In the project folder, run `source .venv/bin/activate` (Windows: `.venv\Scripts\activate`). Every new terminal needs this.
 
-**1.2 The installer says `no active virtual environment detected`**
+**1.2 `scripts/setup.py` says `Python x.y is not supported`**
 
-The installer was started outside a virtual environment. Create and activate one first, as in the installation steps of Exercise 1, then run the installer again.
+The Python you started the script with is older than 3.10 or newer than 3.14. The script looks for a supported interpreter and prints the command to use, for example `python3.13 scripts/setup.py` (Windows: `py -3.13 scripts\setup.py`). If it finds none, install Python 3.12 or 3.13 first, within your organisation's rules, and run the script again. The script creates the project's `.venv` folder only. Your other Python installations and projects stay as they are.
 
-**1.3 The installer says `requires Python >=3.10`**
+**1.3 The setup script stops at the ADA installation, or the installer says `requires Python >=3.10`**
 
-The virtual environment uses an older Python, for example 3.9. Create it again with a newer one:
+Read the last lines of the output. If the installer complains about the Python version, delete the `.venv` folder and run the script again with a supported Python, as in the previous question. If it complains about the network or a key, see 1.6 and 1.7.
 
-1. Check which Python you have: `python3 --version`. If you have no Python 3.10 or newer, install one first, within your organisation's rules.
-2. Leave the old environment: `deactivate`.
-3. Delete the `.venv` folder.
-4. Create a new environment with the newer interpreter: `python3.12 -m venv .venv` (macOS and Linux) or `py -3.12 -m venv .venv` (Windows). Use the version you installed.
-5. Activate it and check `python --version`. It must show 3.10 or newer.
-6. Run the installer again.
+**1.4 `ada doctor` fails with `ModuleNotFoundError: No module named 'click'`**
 
-**1.4 The installation is blocked by a firewall or security software**
+The installer did not finish installing ADA's dependencies. This happens with very new Python versions, such as 3.15. Delete the `.venv` folder and run `scripts/setup.py` again with Python 3.12 or 3.13, for example `/opt/homebrew/bin/python3.13 scripts/setup.py` on a Mac with Homebrew.
+
+**1.5 The installation is blocked by a firewall or security software**
 
 ADA is installed with a script that downloads files, and a firewall or security software can block it. Try the installation again in a project folder on your computer's local hard disk, not on a network drive or in a synced folder. If that does not work, contact your trainer or your own company's IT support.
 
-**1.5 `HTTP 401` or "authorization failed"**
+**1.6 `HTTP 401` or "authorization failed"**
 
-The API key ID or secret is wrong, or the key lacks the required permission. Check that you copied both values from your registration email. Enter them in the terminal when ADA asks for them, not into the chat.
+The API key ID or secret is wrong, or the key lacks the required permission. Check that you copied both values from your registration email. Enter them in the terminal when the setup script asks for them, not into the chat, and run `python3 scripts/setup.py` again. The script asks for the key again if the installation did not finish.
 
-**1.6 "Unreachable" or a network error**
+**1.7 "Unreachable" or a network error**
 
 Your IP address is probably not allowed in the tenant's access rules. Contact your trainer. The Admin UI video in Exercise 1 explains why this can block an installation.
 
-**1.7 `ada doctor` does not list the dev environment**
+**1.8 `ada doctor` does not list the dev environment**
 
-The dev credentials were not saved. Run `ada config credentials --env dev` again and type the key values in the terminal.
+The dev credentials were not saved. Run `ada config credentials --env dev` and type the key values in the terminal.
 
-**1.8 `ada doctor` lists the dev environment twice**
+**1.9 `ada doctor` lists the dev environment twice**
 
 The doctor reads the environments from `config/pipeline.yaml`. Ask ADA to read the file and explain which environments it contains and which one is the design environment. Do not let ADA change credentials. If the list is still odd, ask your trainer.
 
-**1.9 `ada doctor` says that skills are not found or the skills manifest is missing**
+**1.10 `ada doctor` says that skills are not found or the skills manifest is missing**
 
-Run `ada skills update`, as the message suggests, and run `ada doctor` again. If you have not run `ada init` in this project yet, run that first.
+Run `ada skills update`, as the message suggests, and run `ada doctor` again. If the setup script did not finish, run `python3 scripts/setup.py` again: it runs `ada init`.
 
-**1.10 `ada doctor` says `Missing config/sources.yaml`**
+**1.11 `ada doctor` says `Missing config/sources.yaml`**
 
 Look at where you are in Exercise 1. The source configuration is created when you register the FLEETOPS source, so the message can be expected before that step. If you have already described the source to ADA and the message remains, ask your trainer.
 
-**1.11 `ada doctor` warns that `require_ada_cli_version` is not set**
+**1.12 `ada doctor` warns that `require_ada_cli_version` is not set**
 
 This is a warning, not an error. You can continue. Do not run `ada upgrade` unless your trainer tells you to.
 
-**1.12 `ada staging generate` says `ADE schema not found`**
+**1.13 `ada staging generate` says `ADE schema not found`**
 
 `ada config pull` was not run. Run it and try again.
 
-**1.13 A command that uses the dev environment returns `403`**
+**1.14 A command that uses the dev environment returns `403`**
 
 The dev key does not have the permission for that command. Ask your trainer.
+
+**1.15 There is no Start link above the MCP servers in `.vscode/mcp.json`**
+
+VS Code finds `.vscode/mcp.json` only when the project folder is the folder you opened. Open the project folder itself (<span class="ui-action">File</span>, <span class="ui-action">Open Folder</span>), not a folder above it. You can also start the servers from the Command Palette: <span class="ui-action">MCP: List Servers</span>, select the server, <span class="ui-action">Start Server</span>. MCP is optional: everything in the course also works without it.
 
 ---
 
 ## Packages, plan and push
 
-**2.1 `ada push` refuses because of uncommitted changes**
+**2.1 `ada push` refuses with `uncommitted git changes` or `local files modified since last sync`**
 
-The package has local changes that are not committed in Git. Commit them first, or ask ADA to do it. A Git commit in your project is not the same as a commit in Agile Data Engine; you make the latter later, when you deploy.
+This happens when you change a package that you have pushed before, for example the staging package in Exercise 2 or `TRAFFIC_DV_<YOUR_ALIAS>` in Exercise 4. After a push, ADA writes the package back from Agile Data Engine, and the check stops it from overwriting local changes that are not saved anywhere else.
+
+- If you use Git, commit the changes in Git first, or ask ADA to do it. A Git commit in your project is not the same as a commit in Agile Data Engine.
+- Without Git, ask ADA to run `ada plan` first. If the plan shows only the changes you made, ADA can push with `--force`.
 
 **2.2 The plan shows names without your alias**
 
@@ -132,7 +136,7 @@ Another participant's change may be deploying at the same time. Wait a minute an
 
 **3.4 The DAG does not contain your new loads**
 
-The loads were not deployed, or they depend on a different workflow. Ask ADA to list the loads of the DAG (`ada workflow describe`), or open the Graph view of the DAG in Workflow Orchestration.
+The loads were not deployed, or they depend on a different workflow. Open the Graph view of the DAG in DEV Workflow Orchestration and check which loads it has. ADA can list them too (`ada workflow describe`).
 
 **3.5 The load succeeds but a table has no new rows**
 
@@ -165,6 +169,10 @@ Ask your trainer. You can skip the query and continue from the next checkpoint.
 
 A commit alone does not deploy anything. After the commit, promote it to dev and start the deployment: ask ADA to do it, or run `ada deploy promote --to DEV`, then `ada deploy start --to DEV --wait`.
 
+**3.11 The DAG run is green, but the new tables are empty**
+
+The DAG definition is updated after a deployment. A run that starts before the update does not contain the new loads. Wait a minute, open the Graph view of the DAG in Workflow Orchestration, check that the new loads are there, and trigger the DAG again.
+
 ---
 
 ## Data Vault
@@ -195,7 +203,7 @@ Your basic-training model is not deployed. Go back to Exercise 1 and bring the m
 
 **4.7 The DAG succeeds but the new tables are empty**
 
-The staging data was loaded before the new loads existed. Ask ADA to check the run IDs of the FLEETOPS staging entities.
+The run may have started before ADE updated the DAG after your deployment (see 3.11). Check the Graph view of the DAG and trigger it again. If the loads are there and the tables stay empty, ask ADA to check the run IDs of the FLEETOPS staging entities.
 
 **4.8 The row count of `H_TAXI_ZONE` is not what the checkpoint says**
 
@@ -204,6 +212,8 @@ Count the rows with the replacement key `'-1'`, which is the standard replacemen
 ---
 
 ## Publish and analysis
+
+Questions 5.5 to 5.10 are about the optional Exercise 6.
 
 **5.1 The design creates a new zone dimension**
 
@@ -215,7 +225,7 @@ ADA modified the existing taxi entities. Ask it to revert the changes and only r
 
 **5.3 The publish tables are empty after the DAG**
 
-The publish loads did not run in this DAG. Ask ADA to list the loads of `FLEETOPS_<YOUR_ALIAS>` (`ada workflow describe`), or check the Graph view.
+The publish loads did not run in this DAG. Check the Graph view of `FLEETOPS_<YOUR_ALIAS>` in Workflow Orchestration. If the loads are missing, check that the deployment succeeded, wait a minute and trigger the DAG again.
 
 **5.4 Fleet movements disappear when joined to `D_TAXI_ZONE`**
 
@@ -263,7 +273,7 @@ The agent only knows what it reads. Name the files and entities in your prompt.
 
 **6.4 ADA tries to use code preview**
 
-Code preview is not available in this training. If ADA calls it or suggests it, stop it and ask ADA to review the local SQL files in the package instead.
+The exercises do not need code preview. You review the load logic in the local SQL files of the package. If ADA calls code preview, it is not an error, but tell it to keep to the local files.
 
 **6.5 I cannot get ADA to run a database query**
 
@@ -276,6 +286,10 @@ The results were copied from a rendered page. Copy them from the result grid of 
 **6.7 Where do I see the commands ADA runs?**
 
 In the terminal of your AI tool. Read a command before you approve it. If the terminal is not visible, open the terminal panel of VS Code or the command view of your AI tool.
+
+**6.8 ADA builds more than the exercise asks for**
+
+An agent may add entities, extra test steps, exception rows or local test scripts that you did not ask for. Each one is more to build, deploy and check. Ask ADA to remove what is not in the design, and state the limit in your next prompt, as the example prompts do: "Keep to the design: no other entities, steps or tests."
 
 ---
 

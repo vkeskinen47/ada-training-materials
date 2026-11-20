@@ -2,7 +2,7 @@
 layout: exercise
 module_label: "Module 3: Exercise 5"
 title: "Publish Layer and Business Rules"
-duration: "1 hour 30 minutes"
+duration: "1 hour"
 summary: "Define business rules for fleet capacity, implement them in publish entities, and verify the metrics against reference figures."
 ---
 
@@ -12,7 +12,7 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ## The business rules
 
-PackageDelivery's operations team gives you these rules:
+PackageDelivery's operations team gives you these rules. They turn the raw fleet data into the terms of the business question, and the verification at the end of this exercise checks each of them.
 
 - **R1** Movement timestamps are `YYYY-MM-DD HH24:MI:SS`. Exception: EU vans write `DD.MM.YYYY HH24:MI:SS` from 15 February 2017.
 - **R2** All distances are reported in miles. Rows with `distance_unit = 'km'` are converted: 1 km = 0.621371 miles.
@@ -24,15 +24,20 @@ Why 10:00–15:00: deliveries peak in the morning and the afternoon, so the midd
 
 ---
 
-## Part A — Design the Publish Layer
+## Design the Publish Layer
 
-Estimated duration: 20 minutes
+Estimated duration: 15 minutes
 
 1) **Example prompt** (to `ada-developer`):
 
 > Design a publish layer for the FLEETOPS Data Vault so that PackageDelivery can compare idle, taxi-capable fleet capacity per borough with taxi demand. Implement these business rules: [paste the rules R1–R5]
 >
-> If a rule is already implemented in an earlier layer, or conflicts with my Data Vault design, tell me before you design. Each rule must live in exactly one place. Reuse the existing `D_TAXI_ZONE` in `packages/traffic_publish_<your_alias>/` for all zone references, with the same key as `F_TRIP` uses. Store idle time with one row per shift, including the shift date and the vehicle. Write the design to `design/publish_design_fleetops.md`: for each fact and dimension, its grain, its source entities, its measures and attributes, and which rule is implemented where. Do not generate any entity YAML yet.
+> Design exactly three entities:
+> - `D_FLEET_VEHICLE`: one row per vehicle, with the vehicle type, the passenger seats, taxi capability (R3), the home borough (R5) and the cost per mile
+> - `F_FLEET_MOVEMENT`: one row per movement, with the start and end time as timestamps (R1), the distance in miles (R2), and the pickup and dropoff zones as references to the existing `D_TAXI_ZONE` in `packages/traffic_publish_<your_alias>/`, with the same key as `F_TRIP` uses
+> - `F_SHIFT_IDLE`: one row per shift, with the shift date, the vehicle and the idle time between 10:00 and 15:00 (R4), calculated from the movement times in `F_FLEET_MOVEMENT`
+>
+> Each rule lives in exactly one place. If a rule is already implemented in an earlier layer, or conflicts with my Data Vault design, tell me before you design. Keep it simple: no other entities, no exception rows, no extra tests or local test scripts, and no code preview. Ask me only if a rule cannot be implemented as written. Write the design to `design/publish_design_fleetops.md`: for each entity, its grain, its source entities, its measures and attributes, and which rule it implements. Do not generate any entity YAML yet.
 
 **Under the hood:** ADA uses its publish generation skill. It reads the Data Vault packages, the existing publish package and `config/pipeline.yaml`.
 
@@ -40,40 +45,38 @@ Estimated duration: 20 minutes
 
 | Check | Why |
 |---|---|
-| Every fact states its **grain** in one sentence, for example *one row per movement* | Without a grain, nobody can tell whether a sum is right |
-| Every rule R1–R5 is implemented **exactly once**, and the design says in which layer | A rule implemented twice will one day be implemented two different ways |
+| The design has the three entities and nothing else | Every extra entity is more to build, deploy and verify. Ask ADA to remove what you did not ask for |
+| Every entity states its **grain** in one sentence | Without a grain, nobody can tell whether a sum is right |
+| Every rule R1–R5 is implemented **exactly once**, and the design says where | A rule implemented twice will one day be implemented two different ways |
 | Zone references point to the existing `D_TAXI_ZONE`, using the same key as `F_TRIP` | Fleet and taxi figures must be comparable per zone and per borough. A second zone dimension breaks that |
 | The design says what happens to movements whose zone is not in `D_TAXI_ZONE`, such as an unknown zone from Exercise 4 | Otherwise they disappear silently in every join |
-| Descriptive attributes, such as the vehicle type or the home borough, are in a dimension, not in a fact | The fact holds measures and keys |
-| Idle time (R4) is stored with one row per shift | This is the key figure of the decision, and Part C checks it per borough and per day |
 | If a rule changed an earlier decision, the Data Vault design document is updated too | The two documents must not contradict each other |
 
 Tell ADA what to change. Repeat until every check passes.
 
 ### Checkpoint A
 
-- `design/publish_design_fleetops.md` exists and states the grain of every fact
+- `design/publish_design_fleetops.md` exists, with the three entities and the grain of each
 - Every rule R1–R5 is mapped to exactly one load
 - Every open question is answered or left open with a reason
 - The design reuses `D_TAXI_ZONE`. No new zone dimension
-- You have committed the design document to Git
 
 ---
 
-## Part B — Generate, Deploy and Run
+## Generate, Deploy and Run
 
-Estimated duration: 30 minutes
+Estimated duration: 20 minutes
 
 1) **Example prompt:**
 
-> Generate the publish entities from `design/publish_design_fleetops.md`. If an open question in the design blocks the generation, stop and ask me. Validate and show me the plan.
+> Generate the three publish entities from `design/publish_design_fleetops.md`. Keep to the design: no other entities, steps or tests, and no code preview. If an open question in the design blocks the generation, stop and ask me. Validate and show me the plan.
 
 **Under the hood:** ADA writes the entity YAML and an SQL file for each load under `packages/`, and runs `ada validate` and `ada plan`.
 
-> **Note:** `ada validate` and `ada plan` check the structure, not whether the SQL calculates the right thing. That is what step 3 and Part C are for.
+> **Note:** `ada validate` and `ada plan` check the structure, not whether the SQL calculates the right thing. That is what step 3 and the verification are for.
 {: .exercise-note}
 
-2) Review the plan. It must show `+` only for the new publish entities, and no changes to `F_TRIP` or any Data Vault entity. `D_TAXI_ZONE` may change only if your design decided so.
+2) Review the plan. It must show `+` only for the three new publish entities, and no changes to `F_TRIP`, `D_TAXI_ZONE` or any Data Vault entity.
 
 3) Read the SQL of the idle time load. **Example prompt:**
 
@@ -82,27 +85,29 @@ Estimated duration: 30 minutes
 > **Note:** You do not need to write this SQL yourself. You need to understand it well enough to tell whether it implements rule R4. If ADA's explanation and the rule disagree, the SQL is wrong.
 {: .exercise-note}
 
-4) Push and check the code. **Example prompt:**
+4) Push, commit and deploy. **Example prompt:**
 
-> Push the publish package with a dry run first. Do not commit it in ADE yet.
+> Push the publish package. Commit it in ADE with the message "FLEETOPS publish layer", promote it to DEV, deploy it and wait for the deployment.
 
-**Under the hood:** `ada push --dry-run`, then `ada push`. The load logic is reviewed from the local SQL sidecar.
+**Under the hood:** `ada push`, then `ada deploy commit`, `ada deploy promote --to DEV` and `ada deploy start --to DEV --wait`.
 
-5) When the local SQL review and dry run pass, deploy and run. **Example prompt:**
+5) Open DEV <span class="ui-action">Workflow Orchestration</span> and the DAG `FLEETOPS_<YOUR_ALIAS>` in the <span class="ui-action">Graph view</span>, and check that the three publish loads are there. If they are not there yet, wait a minute and refresh. A run that starts before ADE has updated the DAG is green, but it does not run the new loads and the publish tables stay empty.
 
-> Commit the publish package in ADE with the message "FLEETOPS publish layer" and wait for the deployment. List the loads of the DAG `FLEETOPS_<YOUR_ALIAS>` in dev, and tell me whether the new publish loads are there. Then trigger the DAG, wait for it to finish, and show me which publish loads ran and whether they succeeded.
+6) Trigger the DAG. **Example prompt:**
 
-**Under the hood:** `ada deploy commit ... --wait`, `ada workflow describe --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`, `ada dag trigger ... --wait`, and the load statistics of the run.
+> Trigger the DAG `FLEETOPS_<YOUR_ALIAS>` in dev and wait for it to finish.
+
+Then check in Workflow Orchestration that the three publish loads ran and succeeded.
 
 ### Checkpoint B
 
-- The plan shows only new publish entities
+- The plan shows only the three new publish entities
 - You can explain in one sentence how the idle time is calculated
 - The deployment and the DAG succeed, and every new publish load ran in the DAG
 
 ---
 
-## Part C — Verify Against Known Figures
+## Verify Against Known Figures
 
 Estimated duration: 25 minutes
 
@@ -148,38 +153,11 @@ A difference of 0.1 is rounding. A bigger difference means a rule is wrong or mi
 
 ---
 
-## Part D — Where Does the Business Logic Live?
+## Optional: Semantic View
 
-Estimated duration: 15 minutes
+Estimated duration: 20 minutes, not included in the exercise duration
 
-You have implemented the rules R1–R5 inside publish loads. It works, and the decision can be made. But think about what this choice costs.
-
-Ask yourself, or discuss with ADA:
-
-- A second fact needs the harmonised distance. Where is rule R2 then?
-- The operations team changes the idle window to 11:00–15:00 in June. Can you still show what the idle hours were in March under the old rule?
-- An auditor asks why Brooklyn's idle hours were 15.8 in the report of 1 March. What can you show?
-
-<details markdown="1">
-<summary markdown="span">Discussion</summary>
-
-Business logic in publish loads is **recomputed on every run** and **duplicated in every load that needs it**. When a rule changes, history is recalculated with the new rule, and the old figures cannot be reproduced.
-
-A **Business Data Vault** solves this: the rules are computed once into historised business satellites, and every fact reads them. The rule result is stored and auditable, like any other data in the vault. This course uses the publish layer to keep the scope manageable. In real projects, put rules that are shared, that change over time, or that need auditing into a Business Data Vault.
-
-</details>
-
-Finally, commit your design documents. The publish package was committed to Git when you pushed it. **Example prompt:**
-
-> Commit only the files in `design/` to Git with the message "FLEETOPS publish layer verified against reference figures".
-
----
-
-## Part E — Semantic View *(optional)*
-
-Estimated duration: 20 minutes
-
-A semantic view describes your facts, dimensions and metrics so that people and AI tools can query them in business terms.
+A semantic view describes your facts, dimensions and metrics so that people and AI tools can query them in business terms. This part is optional.
 
 1) **Example prompt:**
 
@@ -193,7 +171,7 @@ A semantic view describes your facts, dimensions and metrics so that people and 
 
 2) Review each metric definition against its rules. Then deploy. **Example prompt:**
 
-> Push the semantic view package with a dry run first, then commit it in ADE with the message "FLEETOPS semantic view" and wait for the deployment.
+> Push the semantic view package. Commit it in ADE with the message "FLEETOPS semantic view", promote it to DEV, deploy it and wait for the deployment.
 
 ---
 
@@ -204,9 +182,20 @@ You have:
 - turned business rules into a reviewed publish design, with each rule implemented exactly once
 - reused the existing taxi zone dimension, so fleet and taxi figures are comparable
 - verified the result against figures calculated independently, and traced differences back to rules
-- considered what it costs to keep business logic in publish loads
 
-You now have everything needed to answer PackageDelivery's question. In the next exercise, you will make the recommendation.
+---
+
+## End of the course
+
+Over five exercises you took a new source from raw files to verified business figures, without writing the YAML, the loads or the SQL yourself. What you did instead:
+
+- **Specified** business questions, rules and decisions, precise enough for an agent to act on
+- **Reviewed** designs, plans, SQL and numbers, and rejected them when they were wrong
+- **Verified** the results against row counts and known figures
+
+ADA did the construction. The decisions, and the responsibility for them, stayed with you. That is the job of a data engineer working with an agent.
+
+**Want to finish the business story?** The optional [Exercise 6](Exercise_6_Analysis_and_Decision.md) applies PackageDelivery's decision model to your publish layer and ends with a recommendation memo for management.
 
 ---
 

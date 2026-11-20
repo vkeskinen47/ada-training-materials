@@ -13,7 +13,7 @@ Snowflake as the target database. Example alias in this document: `test`. Replac
 
 ---
 
-## Part A — Prepare
+## Prepare
 
 Estimated duration: 5 minutes
 
@@ -23,7 +23,7 @@ Estimated duration: 5 minutes
 
 The Data Vault types (`HUB`, `LINK`, `SAT`, `SAT_C`, `S_SAT`) must point to `rdv_<your_alias>`, and the postfix must be `<YOUR_ALIAS>`. If something is missing, ask ADA to add it as in Exercise 1.
 
-2) Write down the business question in your own words — in a note, **not to ADA yet**. You give it to ADA in Part B. For example:
+2) Write down the business question in your own words, in a note, **not to ADA yet**. You give it to ADA in the next step. For example:
 
 > *PackageDelivery wants to know in which NYC areas its fleet has idle, passenger-capable capacity at times when taxi demand exists, and what that capacity would earn as taxi service.*
 
@@ -32,7 +32,7 @@ The Data Vault types (`HUB`, `LINK`, `SAT`, `SAT_C`, `S_SAT`) must point to `rdv
 
 ---
 
-## Part B — Let ADA Propose a Model
+## Let ADA Propose a Model
 
 Estimated duration: 15 minutes
 
@@ -40,9 +40,9 @@ Estimated duration: 15 minutes
 
 > I need a Data Vault design for the FLEETOPS staging entities in `packages/stg_fleetops_<your_alias>/`.
 >
-> The business question: [paste your business question from Part A]
+> The business question: [paste your business question]
 >
-> Check the existing Data Vault packages in `packages/` and reuse existing hubs where the business concept is the same. Create a design document in `design/`. Identify hubs, links and satellites with their business keys, and add an entity relationship diagram. Design the Data Vault layer only — the publish layer comes later. Do not generate any entity YAML yet.
+> Check the existing Data Vault packages in `packages/` and reuse existing hubs where the business concept is the same. Create a design document in `design/`. Identify hubs, links and satellites with their business keys, and add an entity relationship diagram. Design the Data Vault layer only. The publish layer comes later. Do not generate any entity YAML yet.
 
 **Under the hood:** ADA uses its Data Vault analysis skill. It reads the staging YAML and `config/pipeline.yaml`, and writes `design/dv_design_<name>.md` with a Mermaid diagram.
 
@@ -51,11 +51,11 @@ Open the design document. VS Code shows the diagram when you open the Markdown p
 > **Note:** ADA may ask you questions. Answer each in a full sentence that states your choice and the reason: *"A link, because a shift only connects a vehicle, a driver and a depot"*, not *"Link."*
 {: .exercise-note}
 
-Business definitions — what counts as *idle*, which vehicles can carry passengers, how earnings are calculated — are **not** decided in the Raw Data Vault. PackageDelivery gives them as business rules later in the course. If ADA asks about them, tell it to record them as open questions for the publish layer.
+Business definitions (what counts as *idle*, which vehicles can carry passengers, how earnings are calculated) are **not** decided in the Raw Data Vault. PackageDelivery gives them as business rules later in the course. If ADA asks about them, tell it to record them as open questions for the publish layer.
 
 ---
 
-## Part C — Review the Design
+## Review the Design
 
 Estimated duration: 25 minutes
 
@@ -64,7 +64,7 @@ Review the design in four short rounds. Each round follows the same pattern: **a
 > **New to Data Vault?** You do not need to know every rule. Ask ADA to explain any term or choice in plain language, and judge the answer against the business question: *does this help PackageDelivery compare its fleet with taxi demand in the same zones?*
 {: .exercise-note}
 
-### Round 1 — Let ADA find its own problems (5 min)
+### Round 1: Let ADA find its own problems (5 min)
 
 **Example prompt:**
 
@@ -77,7 +77,7 @@ Read the list. Choose the fixes you agree with and ask ADA to apply them, for ex
 > **Note:** An agent reviewing its own work finds real problems, but not the ones caused by missing context. The next rounds check what matters most for this business question.
 {: .exercise-note}
 
-### Round 2 — Connect to the existing model (5 min)
+### Round 2: Connect to the existing model (5 min)
 
 `fleet_movement.csv` and `fleet_shift.csv` contain NYC taxi zone IDs: `pickup_locationid`, `dropoff_locationid` and `depot_locationid`. Your data warehouse already has a hub for taxi zones from basic training: `rdv_<your_alias>.H_TAXI_ZONE`, with the business key `taxi_zone_key`.
 
@@ -90,13 +90,13 @@ If it creates a new hub, **example prompt:**
 <details markdown="1">
 <summary markdown="span">Why this matters</summary>
 
-If the design creates a new hub, the fleet data and the taxi data never meet. The comparison PackageDelivery needs — fleet capacity versus taxi demand **in the same zones** — would require joining two hubs that represent the same thing. Data Vault's strength is that a new source attaches to existing business keys.
+If the design creates a new hub, the fleet data and the taxi data never meet. The comparison PackageDelivery needs, fleet capacity versus taxi demand **in the same zones**, would require joining two hubs that represent the same thing. Data Vault's strength is that a new source attaches to existing business keys.
 
-ADA knows your existing model only if it reads it. Whether it does depends on what you point it to — checking it is your job.
+ADA knows your existing model only if it reads it. Whether it does depends on what you point it to, and checking it is your job.
 
 </details>
 
-### Round 3 — Hubs and links (8 min)
+### Round 3: Hubs and links (8 min)
 
 **Example prompt:**
 
@@ -112,7 +112,7 @@ Decide, then **example prompt:**
 
 > Record my decisions in a *Design Decisions* section, each with a reason: [your decisions]. Update the tables and the diagram to match.
 
-### Round 4 — Check against the data (7 min)
+### Round 4: Check against the data (7 min)
 
 A design document records assumptions. Check a few against the staged data. Run in Snowflake:
 
@@ -135,7 +135,7 @@ from ADE_TRAINING_DEV_SAAS.STAGING_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 
 ---
 
-## Part D — Approve the Design
+## Approve the Design
 
 Estimated duration: 10 minutes
 
@@ -143,13 +143,9 @@ Estimated duration: 10 minutes
 
 > Check the design document against this checklist. Report pass or fail for each item, and where in the document you found it. Fix inconsistencies between the text, the tables and the diagram, but ask me before you change any decision: [paste the checklist]
 
-2) Read the report. Check the first item yourself in the diagram — it is the one that matters most.
+2) Read the report. Check the first item yourself in the diagram: it is the one that matters most.
 
 3) Approve the design. **Approved** means: every item in the checklist passes, and every open question is either answered or consciously left open with a reason. You approve, not ADA.
-
-4) Commit the design. **Example prompt:**
-
-> Commit only the design document `design/dv_design_<name>.md` to Git with the message "Approved FLEETOPS Data Vault design".
 
 ### Checkpoint D
 
@@ -164,8 +160,6 @@ All of these must be true in your design document:
 - Every schema contains the alias (`rdv_<your_alias>`)
 - The text, the tables and the diagram agree with each other
 
-And the document is committed to Git.
-
 ---
 
 ## Summary of Exercise 3
@@ -174,7 +168,7 @@ You have:
 
 - framed the business question before designing
 - let ADA propose a Data Vault model and reviewed it critically
-- corrected the design where the agent lacked context — above all, connecting a new source to an existing business key
+- corrected the design where the agent lacked context, above all by connecting a new source to an existing business key
 - checked the design's assumptions against the data
 
 The design is your specification for the next exercise, in which ADA generates the Data Vault entities from it.
