@@ -31,82 +31,52 @@ In this training your trainer provides the API keys. In your own organisation, k
 1) Download the starter project to your local machine:
 https://www.agiledataengine.com/hubfs/Training/ada_starter_project_databricks.zip
 
-2) Extract the ZIP file and open the `ada_starter_project` folder in VS Code. It contains a `README.md` and the FLEETOPS sample files in `source_data/fleetops/`.
+2) Extract the ZIP file and open the `ada_starter_project` folder in VS Code. It contains a `README.md`, the setup script `scripts/setup.py`, and the FLEETOPS sample files in `source_data/fleetops/`.
 
 > **Important:** Do not rename or move the sample files. ADA derives entity names from the file names.
 {: .exercise-note}
 
-3) Open a terminal in VS Code and check your Python version:
+3) Open a terminal in VS Code and run the setup script:
 
 ```bash
-python3 --version
+python3 scripts/setup.py           # Windows: python scripts\setup.py
 ```
 
-Use Python 3.12 or 3.13. Older versions than 3.10 are refused by the installer, and very new versions can fail while the installer adds ADA's dependencies. If `python3` is another version, use the interpreter by its version number below, for example `python3.13` (Windows: `py -3.13`).
+> **Note:** On Windows, start the script with `python`, as shown. Running `.\scripts\setup.py` directly opens a separate console window that closes when the script ends.
+{: .exercise-note}
 
-4) Create and activate a virtual environment. The installer refuses to run without one. The environment belongs to this project only and does not change your other Python installations.
+The script checks your Python version and tells you which interpreter to use if it is not supported (3.10 to 3.14, 3.12 or 3.13 recommended). Then it asks three questions:
 
-```bash
-python3 -m venv .venv              # or: python3.13 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-python --version                   # must show 3.12 or 3.13
-```
+| Question | Answer |
+|---|---|
+| ADE tenant ID | The tenant ID from your registration email |
+| Alias | Your alias, in lowercase |
+| AI coding tool | The tool you use: GitHub Copilot, Claude Code or both |
 
-5) Run the installer:
+It shows what it will do and asks for confirmation. Then it works through five steps:
 
-```bash
-curl -fsSL https://artifacts.saas.agiledataengine.com/install.sh | bash
-```
-
-Windows (PowerShell): `irm https://artifacts.saas.agiledataengine.com/install.ps1 | iex`
-
-6) When prompted, enter the tenant ID from your registration email, the installation name **`datahub`**, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
+- creates a virtual environment in `.venv` and installs ADA. The installer asks for your **design** key ID and secret and checks the key before it installs anything
+- scaffolds the project with `ada init`. Your sample files are kept
+- writes your alias and the target database to `config/pipeline.yaml`
+- asks for your **dev** key ID and secret, stores them, and fetches the tenant's configuration (entity types, load templates, schedules) with `ada config pull`
+- puts the project under version control with an initial Git commit
 
 | If you see | It means | What to do |
 |---|---|---|
-| `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly |
+| `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly, then re-run the script |
 | Unreachable / network error | Your IP address is not allowed | Contact your trainer |
+| `Python x.y is not supported` | The Python you started the script with is too old or too new | Run the script with the interpreter the message names |
 
-7) When the installer prints `ada-cli <version> installed`, scaffold the project:
+The script is safe to re-run, for example after a wrong key or a typo in the alias.
 
-```bash
-ada init                           # Claude Code users: ada init --tool claude
-```
-
-Your sample files in `source_data/` are kept.
-
-8) Add the dev key. Answer the tenant and installation prompts, then paste the **dev** key ID and secret.
-
-```bash
-ada config --env dev
-```
-
-This also registers `dev` as a runtime environment in `config/pipeline.yaml`.
-
-9) Fetch the tenant's configuration, which includes entity types, load templates and schedules:
-
-```bash
-ada config pull
-```
-
-10) Tell ADA which target database you use. Open `config/pipeline.yaml` and add this line at the end of the file:
-
-```yaml
-target_database: DATABRICKS
-```
-
-Without it, ADA assumes Snowflake and previews SQL in the wrong dialect.
-
-11) Optional: put the project under version control. `ada push` works without Git, but with Git ADA saves a commit for every push and pull, so you can revert a change. If Git is not installed, skip this step.
-
-```bash
-git init
-git add -A
-git commit -m "Initial ADA project"
-```
-
-> **Note:** If you use Git, ADA uses it for you from now on. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why.
+> **Note:** ADA uses Git for you from now on. `ada pull` and `ada push` create their own commits, and `ada push` refuses to run while the package has uncommitted changes. Some commands also update files in `config/`, such as the cached schemas. If `git status` shows changes you did not make, that is usually why. If Git is not installed, the script skips it. ADA works without Git too.
 {: .exercise-note}
+
+4) Activate the virtual environment in your terminal. The script prints the command at the end:
+
+```bash
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+```
 
 ### Checkpoint A1
 
@@ -142,27 +112,36 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 > Use the ADE MCP server to check that you can reach ADE, and tell me the name of my API key.
 
-### Give ADA your alias
+### Check your configuration
 
 From now on, you work through ADA. Start ADA in your AI tool:
 
 - **GitHub Copilot in VS Code:** open Copilot Chat in <span class="ui-action">Agent</span> mode and select the `ada-developer` agent
 - **Claude Code:** start `claude` in the project folder
 
-Many trainees share the same ADE tenant, so every schema and package needs your alias. Set it for all entity types at once, so that nothing you create later lands in a shared default schema.
+Many trainees share the same ADE tenant, so every schema and package needs your alias. The setup script has already set the alias for all entity types at once, so that nothing you create later lands in a shared default schema.
 
-**Example prompt:**
+**Review:** open `config/pipeline.yaml` and check the values yourself. Your alias is `<your_alias>` in the examples below:
 
-> My alias is `<your_alias>`. Configure the project so that:
-> - SOURCE entities go to schema `src_<your_alias>`
-> - STAGE entities go to schema `staging_<your_alias>`
-> - HUB, LINK, SAT, SAT_C and S_SAT entities go to schema `rdv_<your_alias>`
-> - DIM and FACT entities go to schema `publish_<your_alias>`
-> - all package names get the postfix `<YOUR_ALIAS>`
+```yaml
+target_database: DATABRICKS
+schema_overrides:
+  SOURCE: src_<your_alias>
+  STAGE: staging_<your_alias>
+  HUB: rdv_<your_alias>
+  LINK: rdv_<your_alias>
+  SAT: rdv_<your_alias>
+  SAT_C: rdv_<your_alias>
+  S_SAT: rdv_<your_alias>
+  FACT: publish_<your_alias>
+  DIM: publish_<your_alias>
+package_name_postfix_override: <YOUR_ALIAS>
+```
 
-**Under the hood:** ADA adds `schema_overrides` and `package_name_postfix_override` to `config/pipeline.yaml`.
+**Under the hood:** ADA reads `schema_overrides` and `package_name_postfix_override` from `config/pipeline.yaml` whenever it generates an entity or a package. `target_database` makes ADA write and render SQL in the Databricks dialect. Without it, ADA assumes Snowflake.
 
-**Review:** open `config/pipeline.yaml` and check the values yourself.
+> **Tip:** If a value is wrong, for example a typo in the alias, re-run `python3 scripts/setup.py` with the right alias, or edit `config/pipeline.yaml` yourself and run `ada doctor` again.
+{: .exercise-note}
 
 > **Note:** Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
 {: .exercise-note}
@@ -455,7 +434,7 @@ from db_datahub_dev.staging_<your_alias>.STG_FLEETOPS_FLEET_MOVEMENT;
 
 You have:
 
-- installed ADA with the official installer and connected it to the design and dev environments
+- installed ADA with the setup script and connected it to the design and dev environments
 - brought your basic-training work into the project as YAML
 - described a new source to ADA and reviewed the entities it generated
 - found and fixed three problems in a generated load before they reached ADE
