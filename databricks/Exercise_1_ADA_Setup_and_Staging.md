@@ -10,7 +10,7 @@ Databricks as the target database. Example alias in this document: `test`. Repla
 
 ---
 
-## Part A — Install ADA and Connect to ADE
+## Install ADA and Connect to ADE
 
 Estimated duration: 70 minutes
 
@@ -36,14 +36,23 @@ https://www.agiledataengine.com/hubfs/Training/ada_starter_project_databricks.zi
 > **Important:** Do not rename or move the sample files. ADA derives entity names from the file names.
 {: .exercise-note}
 
-3) Open a terminal in VS Code and create and activate a virtual environment. The installer refuses to run without one.
+3) Open a terminal in VS Code and check your Python version:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python3 --version
 ```
 
-4) Run the installer:
+Use Python 3.12 or 3.13. Older versions than 3.10 are refused by the installer, and very new versions can fail while the installer adds ADA's dependencies. If `python3` is another version, use the interpreter by its version number below, for example `python3.13` (Windows: `py -3.13`).
+
+4) Create and activate a virtual environment. The installer refuses to run without one. The environment belongs to this project only and does not change your other Python installations.
+
+```bash
+python3 -m venv .venv              # or: python3.13 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python --version                   # must show 3.12 or 3.13
+```
+
+5) Run the installer:
 
 ```bash
 curl -fsSL https://artifacts.saas.agiledataengine.com/install.sh | bash
@@ -51,14 +60,14 @@ curl -fsSL https://artifacts.saas.agiledataengine.com/install.sh | bash
 
 Windows (PowerShell): `irm https://artifacts.saas.agiledataengine.com/install.ps1 | iex`
 
-5) When prompted, enter the tenant ID and installation name from your registration email, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
+6) When prompted, enter the tenant ID from your registration email, the installation name **`datahub`**, environment **`design`**, and your **design** key ID and secret. The installer checks the key before it installs anything.
 
 | If you see | It means | What to do |
 |---|---|---|
 | `HTTP 401` / authorization failed | The key is wrong or lacks permissions | Check that you copied the key ID and secret correctly |
 | Unreachable / network error | Your IP address is not allowed | Contact your trainer |
 
-6) When the installer prints `ada-cli <version> installed`, scaffold the project:
+7) When the installer prints `ada-cli <version> installed`, scaffold the project:
 
 ```bash
 ada init                           # Claude Code users: ada init --tool claude
@@ -66,21 +75,21 @@ ada init                           # Claude Code users: ada init --tool claude
 
 Your sample files in `source_data/` are kept.
 
-7) Add the dev key. Answer the tenant and installation prompts, then paste the **dev** key ID and secret.
+8) Add the dev key. Answer the tenant and installation prompts, then paste the **dev** key ID and secret.
 
 ```bash
-ada config credentials --env dev
+ada config --env dev
 ```
 
 This also registers `dev` as a runtime environment in `config/pipeline.yaml`.
 
-8) Fetch the tenant's configuration, which includes entity types, load templates and schedules:
+9) Fetch the tenant's configuration, which includes entity types, load templates and schedules:
 
 ```bash
 ada config pull
 ```
 
-9) Tell ADA which target database you use. Open `config/pipeline.yaml` and add this line at the end of the file:
+10) Tell ADA which target database you use. Open `config/pipeline.yaml` and add this line at the end of the file:
 
 ```yaml
 target_database: DATABRICKS
@@ -88,7 +97,7 @@ target_database: DATABRICKS
 
 Without it, ADA assumes Snowflake and previews SQL in the wrong dialect.
 
-10) Optional: put the project under version control. `ada push` works without Git, but with Git ADA saves a commit for every push and pull, so you can revert a change. Later exercises also ask ADA to commit design documents to Git. If Git is not installed, skip this step and the Git commit prompts later.
+11) Optional: put the project under version control. `ada push` works without Git, but with Git ADA saves a commit for every push and pull, so you can revert a change. If Git is not installed, skip this step.
 
 ```bash
 git init
@@ -114,7 +123,7 @@ ADE environment reachable: <tenant ID>/<installation>/dev
 
 ### Optional: connect your AI tool to ADE with MCP
 
-MCP (Model Context Protocol) lets the AI agent query ADE directly — for example, which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
+MCP (Model Context Protocol) lets the AI agent query ADE directly, for example which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
 
 1) Generate the configuration for both environments:
 
@@ -126,7 +135,7 @@ This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both fi
 
 2) Connect:
 
-- **VS Code:** open `.vscode/mcp.json` and click <span class="ui-action">Start</span> above each server (`ade-mcp-design`, `ade-mcp-dev`). VS Code asks for the key ID and secret of each environment and stores them securely.
+- **VS Code:** VS Code finds `.vscode/mcp.json` only when the project folder is the folder you opened in VS Code. Start each server (`ade-mcp-design`, `ade-mcp-dev`), either with the <span class="ui-action">Start</span> link above the server in `mcp.json`, or from the Command Palette: <span class="ui-action">MCP: List Servers</span>, select the server, <span class="ui-action">Start Server</span>. VS Code asks for the key ID and secret of each environment and stores them securely.
 - **Claude Code:** set the environment variables `ADE_DESIGN_API_KEY_ID`, `ADE_DESIGN_API_KEY_SECRET`, `ADE_DEV_API_KEY_ID` and `ADE_DEV_API_KEY_SECRET` before you start `claude`.
 
 3) Test it. **Example prompt:**
@@ -158,7 +167,7 @@ Many trainees share the same ADE tenant, so every schema and package needs your 
 > **Note:** Schemas are lowercase (`staging_test`), but package names are always **uppercase** (`STG_FLEETOPS_TEST`), whatever case you type the postfix in.
 {: .exercise-note}
 
-> **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine — the checkpoints describe what must be **true**, not what must be identical.
+> **Note:** AI agents do not always produce the same output twice. If your entity or load names differ slightly from this document, that is fine: the checkpoints describe what must be **true**, not what must be identical.
 {: .exercise-note}
 
 ### Bring the basic-training pipeline into the project
@@ -176,7 +185,7 @@ The starter project contains a copy of the complete basic-training pipeline in `
 
 2) Create your packages from the copy. **Example prompt:**
 
-> Copy the three packages in `model_packages/` into `packages/`. In the copies, replace `zzalias` with `<your_alias>` and `ZZALIAS` with `<YOUR_ALIAS>` everywhere — in folder names, file contents and SQL files. Do not change anything in `model_packages/`.
+> Copy the three packages in `model_packages/` into `packages/`. In the copies, replace `zzalias` with `<your_alias>` and `ZZALIAS` with `<YOUR_ALIAS>` everywhere: in folder names, file contents and SQL files. Do not change anything in `model_packages/`.
 
 > **Note:** The placeholder also renames the schedule to `TAXIDATA_<YOUR_ALIAS>`. Until you have replaced it and created that schedule, `ada validate` reports `TAXIDATA_ZZALIAS` as an unknown schedule.
 {: .exercise-note}
@@ -203,13 +212,15 @@ The starter project contains a copy of the complete basic-training pipeline in `
 | 4. Push | `ada push` | The upserted count matches the plan |
 | 5. Deploy | `ada deploy commit`, `ada deploy promote --to DEV`, `ada deploy start --to DEV --wait` | Every package shows `SUCCESS` |
 
+You use the dry run in this exercise to see what it checks. Later exercises go straight from the plan to the push. A commit alone does not deploy anything: every deployment needs the commit, the promotion to DEV and the deployment itself.
+
 3) Push and deploy. **Example prompt:**
 
 > Push my three taxi packages to ADE in one push. Then commit `CONFIG_LOAD_SCHEDULES`, promote it to DEV, deploy it and wait for the deployment. Then do the same for my three taxi packages in the order staging, DV, publish, one deployment at a time.
 
 **Under the hood:** `ada push -p TAXIDATA_STAGING_<YOUR_ALIAS> -p TRAFFIC_DV_<YOUR_ALIAS> -p TRAFFIC_PUBLISH_<YOUR_ALIAS>`, then for each package `ada deploy commit -p <PACKAGE> -m "..."`, `ada deploy promote --to DEV -p <PACKAGE>` and `ada deploy start --to DEV --wait`
 
-4) Load the taxi files into the landing zone, as in basic training. The taxi loads read their files from a folder named after your alias, for example `<unity_catalog_raw>/TAXIDATA/staging_<your_alias>/RATECODE_DESCRIPTION/`. The **Load Training Data** job in Databricks copies the files there. It loads the taxi data only: the FLEETOPS files are already in the landing zone (Part C):
+4) Load the taxi files into the landing zone, as in basic training. The taxi loads read their files from a folder named after your alias, for example `<unity_catalog_raw>/TAXIDATA/staging_<your_alias>/RATECODE_DESCRIPTION/`. The **Load Training Data** job in Databricks copies the files there. It loads the taxi data only: the FLEETOPS files are already in the landing zone (see below):
 
    - Open the [Load Training Data job](https://adb-1302321888178973.13.azuredatabricks.net/jobs/586698680803194?o=1302321888178973) in Databricks
    - Click the arrow next to **Run now** and choose **Run now with different parameters**. Set `alias` to `<your_alias>` and `batch_number` to `1`, then click **Run**
@@ -237,13 +248,13 @@ join db_datahub_dev.rdv_<your_alias>.S_TAXI_ZONE_C s on h.dv_id = s.dv_id;
 
 ---
 
-## Part B — Add the FLEETOPS Source
+## Add the FLEETOPS Source
 
 Estimated duration: 25 minutes
 
 The `FLEETOPS` source system already exists in ADE (`CONFIG_SYSTEMS`). Your task is to describe the source files to ADA so that it can create the SOURCE and STAGE entities.
 
-> **Why sample files?** `source_data/fleetops/` contains a **sample extract** — the first week of January — not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
+> **Why sample files?** `source_data/fleetops/` contains a **sample extract**: the first week of January, not the full production files. This is common in real projects: the source owner gives you a sample, and the production data arrives later in the landing zone. ADA infers column types from the sample. Keep this in mind. It will matter later.
 {: .exercise-note}
 
 1) **Example prompt:**
@@ -297,11 +308,11 @@ STG_FLEETOPS_<YOUR_ALIAS>:
 Plan: 6 to create, 0 to modify, 0 to delete.
 ```
 
-If you see your alias in every schema and in the package name, your alias configuration from Part A works. If the plan shows anything to modify or delete, stop and find out why before you continue.
+If you see your alias in every schema and in the package name, your alias configuration works. If the plan shows anything to modify or delete, stop and find out why before you continue.
 
 ---
 
-## Part C — Load the Files into Staging
+## Load the Files into Staging
 
 Estimated duration: 45 minutes
 
@@ -347,7 +358,7 @@ FROM
   ) COPY_OPTIONS('force' = 'false');
 ```
 
-The default template fits the basic-training folder layout, not this source. Before you read on, try to find **three problems** yourself, using what you know from Part B and the folder layout above.
+The default template fits the basic-training folder layout, not this source. Before you read on, try to find **three problems** yourself, using what you know from the earlier steps and the folder layout above.
 
 <details markdown="1">
 <summary markdown="span">The three problems</summary>
@@ -411,7 +422,7 @@ The default template fits the basic-training folder layout, not this source. Bef
 
 **Under the hood:** `ada dag trigger --dag-id FLEETOPS_<YOUR_ALIAS> --env dev --wait`
 
-### Checkpoint C2 — the DAG fails
+### Checkpoint C2: the DAG fails
 
 **The DAG fails. This is expected.**
 
