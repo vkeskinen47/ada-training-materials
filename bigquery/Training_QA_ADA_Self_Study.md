@@ -21,7 +21,7 @@ The virtual environment is not active in this terminal. In the project folder, r
 
 **1.2 `scripts/setup.py` says `Python x.y is not supported`**
 
-The Python you started the script with is older than 3.10 or newer than 3.14. The script looks for a supported interpreter and prints the command to use, for example `python3.13 scripts/setup.py` (Windows: `py -3.13 scripts/setup.py`). If it finds none, install Python 3.12 or 3.13 first, within your organisation's rules, and run the script again. The script creates the project's `.venv` folder only. Your other Python installations and projects stay as they are.
+The Python you started the script with is older than 3.10 or newer than 3.14. The script looks for a supported interpreter and prints the command to use, for example `python3.13 scripts/setup.py` (Windows: `py -3.13 scripts\setup.py`). If it finds none, install Python 3.12 or 3.13 first, within your organisation's rules, and run the script again. The script creates the project's `.venv` folder only. Your other Python installations and projects stay as they are.
 
 **1.3 The setup script stops at the ADA installation, or the installer says `requires Python >=3.10`**
 
