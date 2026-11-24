@@ -35,7 +35,7 @@ Use either path, or both and compare.
 
 > Why did the latest run of the DAG `FLEETOPS_<YOUR_ALIAS>` in dev fail? Show me which loads succeeded, which failed, and the full error message.
 
-**Under the hood:** `ada workflow diagnose --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`. It finds the failed run, lists the failed loads with their error messages, and fetches the generated SQL of the failing load. If you configured MCP in Exercise 1, ADA may query ADE through the MCP server instead.
+**Under the hood:** `ada workflow diagnose --env dev --dag-id FLEETOPS_<YOUR_ALIAS>`. It finds the failed run, lists the failed loads with their error messages, and fetches the generated SQL of the failing load.
 
 ### Checkpoint A
 

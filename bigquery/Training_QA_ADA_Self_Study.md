@@ -75,10 +75,6 @@ The dev key does not have the permission for that command. Ask your trainer.
 
 `target_database: BIGQUERY` is missing in `config/pipeline.yaml`. The setup script sets it. Run `python3 scripts/setup.py` again, or add the line yourself, and ask ADA to preview or generate the SQL again.
 
-**1.16 There is no Start link above the MCP servers in `.vscode/mcp.json`**
-
-VS Code finds `.vscode/mcp.json` only when the project folder is the folder you opened. Open the project folder itself (<span class="ui-action">File</span>, <span class="ui-action">Open Folder</span>), not a folder above it. You can also start the servers from the Command Palette: <span class="ui-action">MCP: List Servers</span>, select the server, <span class="ui-action">Start Server</span>. MCP is optional: everything in the course also works without it.
-
 ---
 
 ## Packages, plan and push
@@ -177,9 +173,9 @@ You can also paste your result to ADA, tell it which figure differs, and ask whi
 
 The type change did not reach all three places. Check that the STAGE entity, the PSA entity and the `LOAD DATA` column list in the `.sql` file all say text (`VARCHAR(19)` and `STRING`), that the deployment succeeded and that the plan showed the change.
 
-**3.8 `ada-ops` cannot reach Agile Data Engine through MCP**
+**3.8 `ada-ops` cannot read the workflow runs**
 
-The MCP servers are not running. In VS Code, open `.vscode/mcp.json` and start them. Or ask ADA to use `ada workflow diagnose` instead. The `ada-ops` agent is optional in Exercise 2.
+Ask ADA to run `ada workflow diagnose --env dev --dag-id FLEETOPS_<YOUR_ALIAS>` and show you the output. If it returns `403`, the dev key does not have the permission (see 1.14), and you can ask your trainer. You can always read the failed load in DEV Workflow Orchestration instead. The `ada-ops` agent is optional in Exercise 2.
 
 **3.9 A query in Exercise 2 fails with a permission error**
 

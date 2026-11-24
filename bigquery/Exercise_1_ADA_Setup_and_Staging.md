@@ -91,27 +91,6 @@ ADE environment reachable: <tenant ID>/<installation>/design
 ADE environment reachable: <tenant ID>/<installation>/dev
 ```
 
-### Optional: connect your AI tool to ADE with MCP
-
-MCP (Model Context Protocol) lets the AI agent query ADE directly, for example which loads failed in a workflow run and why. In Exercise 2, the `ada-ops` agent can use it to diagnose failures. **Everything in this course also works without MCP**, so the choice is yours.
-
-1) Generate the configuration for both environments:
-
-```bash
-ada mcp setup --env design --env dev
-```
-
-This creates `.vscode/mcp.json` (VS Code) and `.mcp.json` (Claude Code). Both files contain placeholders only, never your keys, and both are excluded from Git.
-
-2) Connect:
-
-- **VS Code:** VS Code finds `.vscode/mcp.json` only when the project folder is the folder you opened in VS Code. Start each server (`ade-mcp-design`, `ade-mcp-dev`), either with the <span class="ui-action">Start</span> link above the server in `mcp.json`, or from the Command Palette: <span class="ui-action">MCP: List Servers</span>, select the server, <span class="ui-action">Start Server</span>. VS Code asks for the key ID and secret of each environment and stores them securely.
-- **Claude Code:** set the environment variables `ADE_DESIGN_API_KEY_ID`, `ADE_DESIGN_API_KEY_SECRET`, `ADE_DEV_API_KEY_ID` and `ADE_DEV_API_KEY_SECRET` before you start `claude`.
-
-3) Test it. **Example prompt:**
-
-> Use the ADE MCP server to check that you can reach ADE, and tell me the name of my API key.
-
 ### Check your configuration
 
 From now on, you work through ADA. Start ADA in your AI tool:
